@@ -13,12 +13,11 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import com.example.backend.shop.entity.Shop;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-@Builder
 @Getter
 @ToString
 @Table(indexes = {
@@ -62,6 +61,10 @@ public class UserAccount extends AuditingFields {
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private final Set<UserAddress> userAddresses = new LinkedHashSet<>();
 
+    // 새로운 필드 추가: shops
+    @ToString.Exclude
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    private final Set<Shop> shops = new LinkedHashSet<>();
 
     protected UserAccount() {
     }
