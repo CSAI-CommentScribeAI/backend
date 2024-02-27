@@ -13,5 +13,5 @@ public interface ShopRepository extends CrudRepository<Shop, Long> {
 
     List<Shop> findByNameContaining(String shopName);
 
-    Optional<Shop> findByUserAccountId(Long userId);
+    Optional<Shop> findByUserAccount(UserAccount userAccount);
 }

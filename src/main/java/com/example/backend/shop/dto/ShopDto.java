@@ -5,7 +5,6 @@ import com.example.backend.shop.entity.ShopStatus;
 import com.example.backend.shop.entity.ShopSupportedOrderType;
 import com.example.backend.shop.entity.ShopSupportedPayment;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.example.backend.shop.entity.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +12,7 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalTime;
 
 @Getter
@@ -26,10 +26,10 @@ public class ShopDto {
     @JsonProperty("phoneNum")
     private String phoneNum;
 
-    @Range(min = 1, max = 100, message = "Short Description is between 0 and 100")
+    @Size(min = 1, max = 100, message = "Short Description length must be between 1 and 100")
     private String shortDescription;
 
-    @Range(min = 1, max = 1000, message = "Long Description is between 0 and 1000")
+    @Range(min = 1, max = 1000, message = "Long Description length must be between 1 and 1000")
     private String longDescription;
 
     @JsonProperty("supportedOrderType")
@@ -57,7 +57,7 @@ public class ShopDto {
     private String registerNumber;
 
     @NotNull(message = "Owner is mandatory")
-    private long ownerId;
+    private String userAccountId;
 
     @JsonProperty("doroAddress")
     private String doroAddress;
@@ -67,7 +67,6 @@ public class ShopDto {
 
     @JsonProperty("detailAddress")
     private String detailAddress;
-
 
     public ShopDto(Shop shop) {
         this.name = shop.getName();
@@ -82,10 +81,9 @@ public class ShopDto {
         this.minOrderPrice = shop.getMinOrderPrice();
         this.shopStatus = shop.getShopStatus();
         this.registerNumber = shop.getRegisterNumber();
-        this.ownerId = shop.getUserAccount().getId();
+        this.userAccountId = String.valueOf(shop.getUserAccount().getId());
         this.doroAddress = shop.getDoroAddress();
         this.doroIndex = shop.getDoroIndex();
         this.detailAddress = shop.getDetailAddress();
     }
-
 }
