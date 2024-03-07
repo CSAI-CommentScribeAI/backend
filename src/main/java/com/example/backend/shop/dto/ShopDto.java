@@ -56,9 +56,6 @@ public class ShopDto {
     @NotNull(message = "RegisterNumber is mandatory")
     private String registerNumber;
 
-    @NotNull(message = "Owner is mandatory")
-    private String userAccountId;
-
     @JsonProperty("doroAddress")
     private String doroAddress;
 
@@ -81,7 +78,6 @@ public class ShopDto {
         this.minOrderPrice = shop.getMinOrderPrice();
         this.shopStatus = shop.getShopStatus();
         this.registerNumber = shop.getRegisterNumber();
-        this.userAccountId = String.valueOf(shop.getUserAccount().getId());
         this.doroAddress = shop.getDoroAddress();
         this.doroIndex = shop.getDoroIndex();
         this.detailAddress = shop.getDetailAddress();

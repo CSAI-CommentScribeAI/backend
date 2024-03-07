@@ -42,13 +42,29 @@ public class ShopService {
     }
 
     public Long createShop(ShopDto shopDto, Authentication authentication) {
+        if (authentication == null) {
+            // 적절한 예외 처리 또는 로깅
+            throw new RuntimeException("Authentication information is not available.");
+        }
         UserAccount authUser = (UserAccount) authentication.getPrincipal();
 
         Shop shop = Shop.builder()
                 .name(shopDto.getName())
+                .phoneNum(shopDto.getPhoneNum())
                 .shortDescription(shopDto.getShortDescription())
-                .shopStatus(ShopStatus.PAUSED)
-                .userAccount(authUser)
+                .longDescription(shopDto.getLongDescription()) // 추가됨
+                .supportedOrderType(shopDto.getSupportedOrderType()) // 추가됨
+                .supportedPayment(shopDto.getSupportedPayment()) // 추가됨
+                .openTime(shopDto.getOpenTime()) // 추가됨
+                .closeTime(shopDto.getCloseTime()) // 추가됨
+                .deliveryFee(shopDto.getDeliveryFee()) // 추가됨
+                .minOrderPrice(shopDto.getMinOrderPrice()) // 추가됨
+                .shopStatus(shopDto.getShopStatus()) // 이전에는 PAUSED로 고정되었으나, DTO로부터 받은 값으로 설정
+                .registerNumber(shopDto.getRegisterNumber()) // 추가됨
+                .doroAddress(shopDto.getDoroAddress()) // 추가됨
+                .doroIndex(shopDto.getDoroIndex()) // 추가됨
+                .detailAddress(shopDto.getDetailAddress()) // 추가됨
+                .userAccount(authUser) // 이전 코드 유지
                 .build();
 
         return shopRepository.save(shop).getId();
