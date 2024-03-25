@@ -13,4 +13,6 @@ public class TokenDto {
     private String grantType;
     private String accessToken;
     private Long tokenExpiresIn;
+    private String refreshToken; // 리프레쉬 토큰 필드 추가
+    private Long refreshTokenExpiresIn; // 리프레쉬 토큰의 만료 시간 필드 추가
 }
