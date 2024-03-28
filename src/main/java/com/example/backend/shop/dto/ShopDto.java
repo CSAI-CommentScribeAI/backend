@@ -8,9 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Range;
-
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalTime;
@@ -20,48 +19,62 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class ShopDto {
 
-    @NotNull(message = "Name is mandatory")
+    @NotNull(message = "User ID is mandatory")
+    private String userId;
+
+    @NotBlank(message = "Name is mandatory")
     private String name;
 
+    @NotBlank(message = "Phone number is mandatory")
     @JsonProperty("phoneNum")
     private String phoneNum;
 
+    @NotBlank(message = "Short description is mandatory")
     @Size(min = 1, max = 100, message = "Short Description length must be between 1 and 100")
     private String shortDescription;
 
-    @Range(min = 1, max = 1000, message = "Long Description length must be between 1 and 1000")
+    @NotBlank(message = "Long description is mandatory")
+    @Size(min = 1, max = 1000, message = "Long Description length must be between 1 and 1000")
     private String longDescription;
 
+    @NotNull(message = "Supported order type is mandatory")
     @JsonProperty("supportedOrderType")
     private ShopSupportedOrderType supportedOrderType;
 
+    @NotNull(message = "Supported payment type is mandatory")
     @JsonProperty("supportedPayment")
     private ShopSupportedPayment supportedPayment;
 
+    @NotNull(message = "Opening time is mandatory")
     @JsonProperty("openTime")
     private LocalTime openTime;
 
+    @NotNull(message = "Closing time is mandatory")
     @JsonProperty("closeTime")
     private LocalTime closeTime;
 
-    @Min(0)
+    @Min(value = 0, message = "Delivery fee cannot be negative")
     private int deliveryFee;
 
-    @Min(0)
+    @Min(value = 0, message = "Minimum order price cannot be negative")
     private int minOrderPrice;
 
+    @NotNull(message = "Shop status is mandatory")
     @JsonProperty("shopStatus")
     private ShopStatus shopStatus;
 
-    @NotNull(message = "RegisterNumber is mandatory")
+    @NotBlank(message = "Register number is mandatory")
     private String registerNumber;
 
+    @NotBlank(message = "Doro address is mandatory")
     @JsonProperty("doroAddress")
     private String doroAddress;
 
+    @Min(value = 0, message = "Doro index cannot be negative")
     @JsonProperty("doroIndex")
     private int doroIndex;
 
+    @NotBlank(message = "Detail address is mandatory")
     @JsonProperty("detailAddress")
     private String detailAddress;
 

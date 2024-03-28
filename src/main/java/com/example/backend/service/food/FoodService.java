@@ -23,7 +23,7 @@ public class FoodService {
     private final FoodRepository foodRepository;
 
 
-    public List<FoodDTO> createFood(long shopId, FoodInformationRequest request) {
+    public List<FoodDTO> createFood(long shopId, Long id, FoodInformationRequest request) {
         Shop shop = shopRepository.findById(shopId).orElseThrow(EntityExceptionSuppliers.shopNotFound);
         Food food = Food.builder()
                 .name(request.getName())
@@ -48,7 +48,7 @@ public class FoodService {
         return food.getShop().getFoods().stream().map(FoodDTO::new).collect(Collectors.toList());
     }
 
-    public FoodDTO updateFood(long shopId, long foodId, FoodInformationRequest request) {
+    public FoodDTO updateFood(long shopId, Long foodId, Long id, FoodInformationRequest request) {
         Shop shop = shopRepository.findById(shopId).orElseThrow(EntityExceptionSuppliers.shopNotFound);
         Food food = foodRepository.findByIdAndShop(foodId, shop).orElseThrow(EntityExceptionSuppliers.foodNotFound);
         food.changeName(request.getName());

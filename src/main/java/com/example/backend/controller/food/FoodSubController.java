@@ -16,7 +16,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/owners/{ownerId}/shops/{shopId}/foods/{foodId}/sub")
+@RequestMapping("/api/v1/shops/foodsub")
 @RequiredArgsConstructor
 public class FoodSubController {
     private final FoodSubService foodSubService;
@@ -27,10 +27,9 @@ public class FoodSubController {
      * 새로운 서브 푸드를 create,
      * @param shopId 상점의 ID, @param foodId 이 서브 메뉴를 소유하는 음식의 ID
      * @param request 생성할 서브 푸드의 정보
-     * @return 생성된 서브 푸드의 DTO
      */
-    @PostMapping
-    public ResponseEntity<ApiResponse<List<FoodSubDTO>>> createSubFood(@PathVariable long ownerId,
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<List<FoodSubDTO>>> createSubFood(@PathVariable long userId,
                                                                        @PathVariable long shopId,
                                                                        @PathVariable long foodId,
                                                                        @Valid @RequestBody FoodSubInformationRequest request) {
@@ -42,12 +41,12 @@ public class FoodSubController {
 
     /**
      * 서브 푸드를 삭제
-     * @param ownerId 상점 소유주의 ID,@param shopId 상점의 ID
+     * @param userId 상점 소유주의 ID,@param shopId 상점의 ID
      * @param foodId 음식의 ID,@param subId 서브 푸드의 ID
      * @return 삭제된 푸드를 제외한 서브 푸드 DTO
      */
-    @DeleteMapping("/{subId}")
-    public ResponseEntity<ApiResponse<List<FoodSubDTO>>> deleteSubFood(@PathVariable long ownerId,
+    @DeleteMapping("/delete")
+    public ResponseEntity<ApiResponse<List<FoodSubDTO>>> deleteSubFood(@PathVariable long userId,
                                                                        @PathVariable long shopId,
                                                                        @PathVariable long foodId,
                                                                        @PathVariable long subId) {
@@ -62,7 +61,7 @@ public class FoodSubController {
      * @param request 업데이트된 서브 푸드의 정보
      * @return 업데이트된 서브 푸드의 DTO
      */
-    @PutMapping("/{subId}")
+    @PutMapping("/update")
     public ResponseEntity<ApiResponse<FoodSubDTO>> updateSubFood(@PathVariable long ownerId,
                                                                  @PathVariable long shopId,
                                                                  @PathVariable long foodId,
@@ -75,14 +74,14 @@ public class FoodSubController {
 
     /**
      * 새로운 서브 푸드 그룹을 creat
-     * @param ownerId 상점 소유주의 ID
+     * @param userId 상점 소유주의 ID
      * @param shopId 상점의 ID, @param foodId 음식의 ID
      * @param request 생성할 서브 푸드 그룹의 정보
      * @return 서브 푸드 그룹의 DTO
      */
     @PostMapping("/groups")
     public ResponseEntity<ApiResponse<List<FoodSubSelectGroupDTO>>> createFoodSubGroup(
-            @PathVariable long ownerId,
+            @PathVariable long userId,
             @PathVariable long shopId,
             @PathVariable long foodId,
             @Valid @RequestBody FoodSubSelectGroupInformationRequest request) {
@@ -95,13 +94,13 @@ public class FoodSubController {
     /**
      * 서브 푸드 그룹의 정보를 update
      *
-     * @param ownerId 상점 소유주의 ID, @param shopId 상점의 ID
+     * @param userId 상점 소유주의 ID, @param shopId 상점의 ID
      * @param foodId 음식의 ID, @param request 업데이트된 서브 푸드 그룹의 정보
      * @return 업데이트된 서브 푸드 그룹의 DTO
      */
-    @PutMapping("/groups/{groupId}")
+    @PutMapping("/groups/food/update")
     public ResponseEntity<ApiResponse<FoodSubSelectGroupDTO>> updateFoodSubGroup(
-            @PathVariable long ownerId,
+            @PathVariable long userId,
             @PathVariable long shopId,
             @PathVariable long foodId,
             @PathVariable long groupId,
@@ -112,13 +111,13 @@ public class FoodSubController {
 
     /**
      * 서브 푸드 그룹을 delete
-     * @param ownerId 상점 소유주, @param shopId 상점의 ID
+     * @param userId 상점 소유주, @param shopId 상점의 ID
      * @param foodId 음식의 ID, @param groupId 서브 푸드 그룹의 ID
      * @return 삭제된 그룹을 제외한 서브 푸드 그룹 DTO
      */
-    @DeleteMapping("/groups/{groupId}")
+    @DeleteMapping("/groups/food/delete")
     public ResponseEntity<ApiResponse<List<FoodSubSelectGroupDTO>>> deleteFoodSubGroup(
-            @PathVariable long ownerId,
+            @PathVariable long userId,
             @PathVariable long shopId,
             @PathVariable long foodId,
             @PathVariable long groupId) {
@@ -129,13 +128,13 @@ public class FoodSubController {
 
     /**
      * 서브 푸드를 그룹에 add
-     * @param ownerId 상점 소유주의 ID, @param shopId 상점의 ID
+     * @param userId 상점 소유주의 ID, @param shopId 상점의 ID
      * @param foodId 음식의 ID, @param subId 서브 푸드의 ID
      * @param groupId 추가할 서브 푸드 그룹의 ID, @return 추가된 그룹의 서브 푸드 DTO 목록
      */
-    @PutMapping("/{subId}/groups/{groupId}")
+    @PutMapping("/add/groups/food")
     public ResponseEntity<ApiResponse<List<FoodSubDTO>>> joinFoodSubGroup(
-            @PathVariable long ownerId,
+            @PathVariable long userId,
             @PathVariable long shopId,
             @PathVariable long foodId,
             @PathVariable long subId,
@@ -146,15 +145,15 @@ public class FoodSubController {
 
     /**
      * 서브 푸드를 그룹에서 delete
-     * @param ownerId 상점 소유주의 ID
+     * @param userId 상점 소유주의 ID
      * @param shopId 상점의 ID
      * @param foodId 음식의 ID
      * @param subId 서브 푸드의 ID
      * @return null
      */
-    @DeleteMapping("/{subId}/groups") // 그룹이 M:N이 아니므로 그룹 ID가 필요X
+    @DeleteMapping("/add/groups/delete") // 그룹이 M:N이 아니므로 그룹 ID가 필요X
     public ResponseEntity<ApiResponse<List<FoodSubSelectGroupDTO>>> withdrawFoodSubGroup(
-            @PathVariable long ownerId,
+            @PathVariable long userId,
             @PathVariable long shopId,
             @PathVariable long foodId,
             @PathVariable long subId) {

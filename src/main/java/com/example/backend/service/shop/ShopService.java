@@ -1,23 +1,24 @@
 package com.example.backend.service.shop;
 
-import com.example.backend.root.exception.EntityExceptionSuppliers;
 import com.example.backend.shop.dto.ShopDto;
 import com.example.backend.shop.dto.ShopSearchResponse;
 import com.example.backend.shop.entity.Shop;
 import com.example.backend.shop.entity.ShopCategory;
-import com.example.backend.shop.entity.ShopStatus;
 import com.example.backend.shop.repository.ShopCategoryRepository;
 import com.example.backend.shop.repository.ShopRepository;
 import com.example.backend.UserAccount.entity.UserAccount;
 import com.example.backend.UserAccount.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
@@ -28,59 +29,69 @@ public class ShopService {
     private final ShopRepository shopRepository;
     private final ShopCategoryRepository shopCategoryRepository;
 
-    public ShopDto findShopByUser(Authentication authentication) {
-        UserAccount authUser = (UserAccount) authentication.getPrincipal();
-        Shop shop = shopRepository.findByUserAccount(authUser)
+    public Shop findShopByUser(Authentication authentication) {
+        long userId = Long.parseLong(authentication.getName());
+        UserAccount authUser = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
+        return shopRepository.findByUserAccount(authUser)
                 .orElseThrow(() -> new IllegalStateException("Shop not found for this user."));
-        return new ShopDto(shop);
     }
 
     public List<ShopSearchResponse> getShopList(int page, int limit) {
-        List<ShopSearchResponse> shopResponses = new ArrayList<>();
-        shopRepository.findAll().forEach(shop -> shopResponses.add(new ShopSearchResponse(shop)));
-        return shopResponses;
+        Iterable<Shop> iterable = shopRepository.findAll();
+        Stream<Shop> stream = StreamSupport.stream(iterable.spliterator(), false);
+        return stream
+                .map(ShopSearchResponse::new)
+                .collect(Collectors.toList());
     }
 
     public Long createShop(ShopDto shopDto, Authentication authentication) {
         if (authentication == null) {
-            // 적절한 예외 처리 또는 로깅
             throw new RuntimeException("Authentication information is not available.");
         }
-        UserAccount authUser = (UserAccount) authentication.getPrincipal();
+
+        long userId = Long.parseLong(authentication.getName());
+        UserAccount authUser = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
 
         Shop shop = Shop.builder()
                 .name(shopDto.getName())
                 .phoneNum(shopDto.getPhoneNum())
                 .shortDescription(shopDto.getShortDescription())
-                .longDescription(shopDto.getLongDescription()) // 추가됨
-                .supportedOrderType(shopDto.getSupportedOrderType()) // 추가됨
-                .supportedPayment(shopDto.getSupportedPayment()) // 추가됨
-                .openTime(shopDto.getOpenTime()) // 추가됨
-                .closeTime(shopDto.getCloseTime()) // 추가됨
-                .deliveryFee(shopDto.getDeliveryFee()) // 추가됨
-                .minOrderPrice(shopDto.getMinOrderPrice()) // 추가됨
-                .shopStatus(shopDto.getShopStatus()) // 이전에는 PAUSED로 고정되었으나, DTO로부터 받은 값으로 설정
-                .registerNumber(shopDto.getRegisterNumber()) // 추가됨
-                .doroAddress(shopDto.getDoroAddress()) // 추가됨
-                .doroIndex(shopDto.getDoroIndex()) // 추가됨
-                .detailAddress(shopDto.getDetailAddress()) // 추가됨
-                .userAccount(authUser) // 이전 코드 유지
+                .longDescription(shopDto.getLongDescription())
+                .supportedOrderType(shopDto.getSupportedOrderType())
+                .supportedPayment(shopDto.getSupportedPayment())
+                .openTime(shopDto.getOpenTime())
+                .closeTime(shopDto.getCloseTime())
+                .deliveryFee(shopDto.getDeliveryFee())
+                .minOrderPrice(shopDto.getMinOrderPrice())
+                .shopStatus(shopDto.getShopStatus())
+                .registerNumber(shopDto.getRegisterNumber())
+                .doroAddress(shopDto.getDoroAddress())
+                .doroIndex(shopDto.getDoroIndex())
+                .detailAddress(shopDto.getDetailAddress())
+                .userAccount(authUser)
                 .build();
 
         return shopRepository.save(shop).getId();
     }
 
-    public void deleteShop(Long id, Authentication authentication) {
-        Shop shop = shopRepository.findById(id).orElseThrow(EntityExceptionSuppliers.shopNotFound);
-        UserAccount authUser = (UserAccount) authentication.getPrincipal();
+    public Long deleteShop(Authentication authentication) {
+        Shop shop = findShopByUser(authentication);
+        long userId = Long.parseLong(authentication.getName());
+        UserAccount authUser = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
         if (!shop.getUserAccount().getId().equals(authUser.getId())) {
             throw new IllegalStateException("Permission denied: You are not the owner of this shop.");
         }
         shopRepository.delete(shop);
+        return null;
     }
 
     public Long updateShop(ShopDto shopDto, Authentication authentication) {
-        UserAccount authUser = (UserAccount) authentication.getPrincipal();
+        long userId = Long.parseLong(authentication.getName());
+        UserAccount authUser = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
         Shop shop = shopRepository.findByUserAccount(authUser)
                 .orElseThrow(() -> new IllegalStateException("Shop not found for this user."));
         shop.setShortDescription(shopDto.getShortDescription());
@@ -88,21 +99,27 @@ public class ShopService {
     }
 
     public List<ShopSearchResponse> findAllShops() {
-        List<ShopSearchResponse> shopResponses = new ArrayList<>();
-        shopRepository.findAll().forEach(shop -> shopResponses.add(new ShopSearchResponse(shop)));
-        return shopResponses;
+        Iterable<Shop> iterable = shopRepository.findAll();
+        Stream<Shop> stream = StreamSupport.stream(iterable.spliterator(), false);
+        return stream
+                .map(ShopSearchResponse::new)
+                .collect(Collectors.toList());
     }
 
     public List<ShopSearchResponse> findByName(String shopName) {
-        return shopRepository.findByNameContaining(shopName).stream()
+        Iterable<Shop> iterable = shopRepository.findByNameContaining(shopName);
+        Stream<Shop> stream = StreamSupport.stream(iterable.spliterator(), false);
+        return stream
                 .map(ShopSearchResponse::new)
                 .collect(Collectors.toList());
     }
 
     public List<ShopSearchResponse> findByCategory(Long categoryId) {
         List<ShopCategory> shopCategories = shopCategoryRepository.findAllByCategoryId(categoryId);
-        return shopCategories.stream()
+        List<Shop> shops = shopCategories.stream()
                 .map(ShopCategory::getShop)
+                .collect(Collectors.toList());
+        return shops.stream()
                 .map(ShopSearchResponse::new)
                 .collect(Collectors.toList());
     }

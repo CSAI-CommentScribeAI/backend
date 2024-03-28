@@ -55,7 +55,7 @@ public class Shop extends AuditableEntity {
     private String registerNumber;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "userId", referencedColumnName = "id")
     private UserAccount userAccount;
 
     @Column(name = "doro_address", nullable = false)
@@ -83,5 +83,4 @@ public class Shop extends AuditableEntity {
         if (name.isBlank()) return;
         this.name = name;
     }
-
 }
