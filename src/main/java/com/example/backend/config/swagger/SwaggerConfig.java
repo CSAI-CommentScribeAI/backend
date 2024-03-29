@@ -1,37 +1,51 @@
 package com.example.backend.config.swagger;
 
-import static antlr.Tool.version;
-
-import java.util.function.Predicate;
+import java.util.List;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
+import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.HttpAuthenticationScheme;
+import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
 public class SwaggerConfig {
 
-    private Docket testDocket(String groupName, Predicate<String> selector) {
+    private static final String REFERENCE = "Bearer 토큰 값";
+
+    @Bean
+    public Docket api() {
         return new Docket(DocumentationType.OAS_30)
-                .apiInfo(this.apiInfo(groupName)) // ApiInfo 설정
-                .useDefaultResponseMessages(false)
-                .groupName("testApi")
                 .select()
-                .apis(RequestHandlerSelectors.
-                        basePackage("패키지명"))
-                .paths(PathSelectors.ant("/api/**")).build();
+                .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
+                .paths(PathSelectors.any())
+                .build()
+                .securityContexts(List.of(securityContext()))
+                .securitySchemes(List.of(bearerAuthSecurityScheme()));
     }
 
-    private ApiInfo apiInfo(String groupName) {
-        return new ApiInfoBuilder()
-                .title("제목")
-                .description("설명")
-                .version(version)
-                .contact(new Contact("이름", "홈페이지 URL", "e-mail"))
+    private SecurityContext securityContext() {
+        return SecurityContext.builder()
+                .securityReferences(defaultAuth())
+                .operationSelector(operationContext -> true)
+                .build();
+    }
+
+    private List<SecurityReference> defaultAuth() {
+        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+        authorizationScopes[0] = new AuthorizationScope("global", "accessEverything");
+        return List.of(new SecurityReference(REFERENCE, authorizationScopes));
+    }
+
+    private HttpAuthenticationScheme bearerAuthSecurityScheme() {
+        return  HttpAuthenticationScheme.JWT_BEARER_BUILDER
+                .name(REFERENCE)
                 .build();
     }
 }
