@@ -33,6 +33,9 @@ public class Food extends AuditableEntity {
     @Column(name = "discount_amount", nullable = false)
     private int discountAmount;
 
+    @Column(name = "food_image")
+    private String foodImage;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", referencedColumnName = "id")
     private Shop shop;
@@ -85,6 +88,7 @@ public class Food extends AuditableEntity {
             int price,
             DiscountType discountType,
             int discountAmount,
+            String foodImage,
             Shop shop,
             FoodStatus status) {
         this.name = name;
@@ -92,6 +96,7 @@ public class Food extends AuditableEntity {
         this.price = price;
         this.discountType = discountType;
         this.discountAmount = discountAmount;
+        this.foodImage = foodImage;
         this.shop = shop;
         this.status = status;
     }

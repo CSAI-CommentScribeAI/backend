@@ -13,6 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class FoodGroup extends IdentifiableEntity {
     @ManyToOne(cascade = CascadeType.PERSIST)
+
     // if cascade to all, when food-group entity is deleted, food is deleted too.
     @JoinColumn(name = "food_id", referencedColumnName = "id")
     private Food food;

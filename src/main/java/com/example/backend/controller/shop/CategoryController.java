@@ -5,7 +5,6 @@ import com.example.backend.shop.dto.CategoryDto;
 import com.example.backend.service.shop.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequestMapping("/api/v1/shops/categories")
 @RequiredArgsConstructor
@@ -18,14 +17,19 @@ public class CategoryController {
         return ApiResponse.success(categoryService.createCategory(categoryDto));
     }
 
-    @DeleteMapping("/delete")
-    public ApiResponse<Void> deleteCategory(@PathVariable Long categoryId) { // Category ID 노출하지 않음
+    @DeleteMapping("/{categoryId}")
+    public ApiResponse<Void> deleteCategory(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
         return ApiResponse.success(null, "Category deleted.");
     }
 
-    @PutMapping("/update")
-    public ApiResponse<Long> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDto categoryDto) { // Category ID 노출하지 않음
-        return ApiResponse.success(categoryService.updateCategory(categoryId, categoryDto)); // 카테고리 ID를 함께 전달
+    @PutMapping("/{categoryId}")
+    public ApiResponse<Long> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDto categoryDto) {
+        return ApiResponse.success(categoryService.updateCategory(categoryId, categoryDto));
+    }
+
+    @PostMapping("/join")
+    public ApiResponse<Long> joinCategory(@RequestBody JoinCategoryRequest joinCategoryRequest) {
+        return ApiResponse.success(categoryService.joinShopCategory(joinCategoryRequest.getShopId(), joinCategoryRequest.getCategoryId()));
     }
 }

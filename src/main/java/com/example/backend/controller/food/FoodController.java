@@ -71,6 +71,6 @@ public class FoodController {
 
     private Long getUserIdFromAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return 1L; // 실제 사용자 인증 및 권한 로직에 맞게 수정 필요
+        return 1L;
     }
 }

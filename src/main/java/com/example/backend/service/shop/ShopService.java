@@ -85,7 +85,7 @@ public class ShopService {
             throw new IllegalStateException("Permission denied: You are not the owner of this shop.");
         }
         shopRepository.delete(shop);
-        return null;
+        return shop.getId();
     }
 
     public Long updateShop(ShopDto shopDto, Authentication authentication) {

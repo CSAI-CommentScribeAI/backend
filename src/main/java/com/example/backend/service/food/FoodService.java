@@ -39,15 +39,31 @@ public class FoodService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<FoodDTO> deleteFood(long foodId) {
         Food food = foodRepository.findById(foodId).orElseThrow(EntityExceptionSuppliers.foodNotFound);
+        Shop shop = food.getShop();
+
+        // 연관된 FoodGroup에서 현재 Food 제거
         food.getJoinedGroups().stream()
                 .map(FoodGroup::getGroup)
                 .forEach(group -> group.removeFood(food));
-        foodRepository.delete(food);
-        return food.getShop().getFoods().stream().map(FoodDTO::new).collect(Collectors.toList());
-    }
 
+        // Food 엔티티 삭제
+        foodRepository.delete(food);
+
+        // Hibernate 캐시를 우회하여 최신 데이터를 가져오기 위해 Shop의 Foods 컬렉션을 새로고침
+        // 영속성 컨텍스트 내의 Shop 엔티티 새로고침 (선택적)
+        // entityManager.refresh(shop);
+
+        // 삭제된 Food를 제외하고 Shop의 Foods 목록을 DTO로 변환하여 반환
+        // 직접 컬렉션에서 Food 제거
+        shop.getFoods().removeIf(f -> f.getId().equals(foodId));
+
+        return shop.getFoods().stream()
+                .map(FoodDTO::new)
+                .collect(Collectors.toList());
+    }
     public FoodDTO updateFood(long shopId, Long foodId, Long id, FoodInformationRequest request) {
         Shop shop = shopRepository.findById(shopId).orElseThrow(EntityExceptionSuppliers.shopNotFound);
         Food food = foodRepository.findByIdAndShop(foodId, shop).orElseThrow(EntityExceptionSuppliers.foodNotFound);

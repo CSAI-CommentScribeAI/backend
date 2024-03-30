@@ -19,4 +19,6 @@ public interface ShopCategoryRepository extends CrudRepository<ShopCategory, Lon
     void deleteByShopAndCategory(Shop shop, Category category);
 
     List<ShopCategory> findAllByCategoryId(@Param("categoryId") Long categoryId);
+
+    List<ShopCategory> findByCategory(Category category);
 }

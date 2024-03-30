@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -29,24 +31,37 @@ public class CategoryService {
     }
 
     public void deleteCategory(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(EntityExceptionSuppliers.categoryNotFound);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(EntityExceptionSuppliers.categoryNotFound);
+
+        // 해당 카테고리와 연관된 모든 ShopCategory 삭제
+        List<ShopCategory> shopCategories = shopCategoryRepository.findByCategory(category);
+        for (ShopCategory shopCategory : shopCategories) {
+            shopCategoryRepository.delete(shopCategory);
+        }
+
+        // Category 삭제
         categoryRepository.delete(category);
     }
 
     public CategoryDto findCategory(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(EntityExceptionSuppliers.categoryNotFound);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(EntityExceptionSuppliers.categoryNotFound);
         return new CategoryDto(category);
     }
 
     public Long updateCategory(Long id, CategoryDto categoryDto) {
-        Category category = categoryRepository.findById(id).orElseThrow(EntityExceptionSuppliers.categoryNotFound);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(EntityExceptionSuppliers.categoryNotFound);
         category.changeName(categoryDto.getName());
         return category.getId();
     }
 
     public Long joinShopCategory(long shopId, long categoryId) {
-        Shop shop = shopRepository.findById(shopId).orElseThrow(EntityExceptionSuppliers.shopNotFound);
-        Category category = categoryRepository.findById(categoryId).orElseThrow(EntityExceptionSuppliers.categoryNotFound);
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(EntityExceptionSuppliers.shopNotFound);
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(EntityExceptionSuppliers.categoryNotFound);
 
         if(shopCategoryRepository.existsByShopAndCategory(shop, category)) {
             ShopCategory shopCategory = shopCategoryRepository.findByShopAndCategory(shop, category);
@@ -63,8 +78,10 @@ public class CategoryService {
     }
 
     public void withdrawShopCategory(long shopId, long categoryId) {
-        Shop shop = shopRepository.findById(shopId).orElseThrow(EntityExceptionSuppliers.shopNotFound);
-        Category category = categoryRepository.findById(categoryId).orElseThrow(EntityExceptionSuppliers.categoryNotFound);
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(EntityExceptionSuppliers.shopNotFound);
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(EntityExceptionSuppliers.categoryNotFound);
         shopCategoryRepository.deleteByShopAndCategory(shop, category);
     }
 }

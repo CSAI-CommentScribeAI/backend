@@ -30,4 +30,6 @@ public class Category extends IdentifiableEntity {
     public Category(String name) {
         this.name = name;
     }
+
+
 }

@@ -29,6 +29,9 @@ public class FoodDTO {
     @JsonProperty("status")
     private final FoodStatus status;
 
+    @JsonProperty("foodImage")
+    private final String foodImage;
+
 
     public FoodDTO(Food food) {
         this.id = food.getId();
@@ -38,5 +41,6 @@ public class FoodDTO {
         this.discountType = food.getDiscountType();
         this.discountAmount = food.getDiscountAmount();
         this.status = food.getStatus();
+        this.foodImage = food.getFoodImage();
     }
 }

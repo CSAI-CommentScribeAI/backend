@@ -1,3 +1,4 @@
+
 package com.example.backend.shop.dto;
 
 import com.example.backend.shop.entity.Shop;
@@ -16,7 +17,7 @@ public class ShopSearchResponse {
     private int minOrderPrice;
     private ShopStatus shopStatus;
 
-    // 수정된 생성자: 음식 목록 매개변수 제거
+
     public ShopSearchResponse(Shop shop) {
         this.shopName = shop.getName();
         this.phoneNum = shop.getPhoneNum();

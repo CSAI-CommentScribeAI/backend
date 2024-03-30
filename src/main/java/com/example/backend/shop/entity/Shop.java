@@ -79,8 +79,11 @@ public class Shop extends AuditableEntity {
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private final List<ShopCategory> shopCategories = new ArrayList<>();
 
-    public void changeName(@NonNull String name) {
-        if (name.isBlank()) return;
-        this.name = name;
-    }
+    // 추가된 필드
+    @Column(name = "shop_image")
+    private String shopImage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
 }
