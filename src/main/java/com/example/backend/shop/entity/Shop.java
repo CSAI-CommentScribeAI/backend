@@ -1,7 +1,7 @@
 package com.example.backend.shop.entity;
 
-import com.example.backend.food.entity.Food;
-import com.example.backend.food.entity.Group;
+import com.example.backend.menu.entity.Food;
+import com.example.backend.menu.entity.Group;
 import com.example.backend.root.AuditableEntity;
 import com.example.backend.UserAccount.entity.UserAccount;
 import lombok.*;

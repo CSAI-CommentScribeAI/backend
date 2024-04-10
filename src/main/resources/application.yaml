@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: ${DATABASE_URL}  # ?? ?? ??
-    username: ${DATABASE_USERNAME}  # ?? ?? ??
-    password: ${DATABASE_PASSWORD}  # ?? ?? ??
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   security:
@@ -46,6 +46,30 @@ spring:
         default_batch_fetch_size: 100
 
   h2.console.enabled: true
+#AWS 액세스 IAMMUSER 정보
+cloud:
+  aws:
+    credentials:
+      # 환경 변수 또는 보안 저장소에서 액세스 키 및 시크릿 키 가져오기
+      accessKey: ${ACCESSKEY}
+      secretKey: ${SECRETKEY}
+    # S3 버킷의 정보
+    s3:
+      bucket:
+      # 올바른 S3 버킷 이름으로 변경
+        bucket-name: ${S3_BUCKET}
+    region:
+      # 올바른 리전 이름으로 변경
+      static: ${REGION}
+
+    stack:
+      auto: false
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 15MB
 
   sql:
     init:

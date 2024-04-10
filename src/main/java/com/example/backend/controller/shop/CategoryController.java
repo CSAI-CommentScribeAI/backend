@@ -1,8 +1,8 @@
 package com.example.backend.controller.shop;
 
 import com.example.backend.root.ApiResponse;
-import com.example.backend.shop.dto.CategoryDto;
 import com.example.backend.service.shop.CategoryService;
+import com.example.backend.shop.dto.CategoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 @RestController
