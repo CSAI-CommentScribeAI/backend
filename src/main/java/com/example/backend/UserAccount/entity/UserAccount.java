@@ -22,7 +22,6 @@ import lombok.ToString;
 @ToString
 @Table(indexes = {
         @Index(columnList = "userId"),
-        @Index(columnList = "email", unique = true),
         @Index(columnList = "createdAt"),
         @Index(columnList = "createdBy")
 })
@@ -39,9 +38,6 @@ public class UserAccount extends AuditingFields {
     @Column(nullable = false)
     private String password;
 
-    @Setter
-    @Column(length = 100)
-    private String email;
     @Setter
     @Column(length = 100)
     private String userName;
@@ -70,11 +66,10 @@ public class UserAccount extends AuditingFields {
     }
 
     @Builder
-    public UserAccount(Long id, String userId, String password, String email, String userName, String phone, String nickname, String memo, UserRole userRole) {
+    public UserAccount(Long id, String userId, String password, String userName, String phone, String nickname, String memo, UserRole userRole) {
         this.id = id;
         this.userId = userId;
         this.password = password;
-        this.email = email;
         this.userName = userName;
         this.phone = phone;
         this.nickname = nickname;

@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Builder
 public class UserAccountRequestDto {
     private String userId;
-    private String email;
     private String password;
     private String nickname;
     private String userName;
@@ -26,7 +25,6 @@ public class UserAccountRequestDto {
     public UserAccount toUserAccount(PasswordEncoder passwordEncoder) {
         return UserAccount.builder()
                 .userId(userId)
-                .email(email)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)
                 .userName(userName)
