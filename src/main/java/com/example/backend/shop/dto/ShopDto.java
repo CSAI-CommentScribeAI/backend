@@ -1,19 +1,18 @@
 
 package com.example.backend.shop.dto;
 
-import com.example.backend.shop.entity.Shop;
 import com.example.backend.shop.entity.ShopStatus;
 import com.example.backend.shop.entity.ShopSupportedOrderType;
 import com.example.backend.shop.entity.ShopSupportedPayment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -44,10 +43,10 @@ public class ShopDto {
     private ShopSupportedPayment supportedPayment;
 
     @NotNull(message = "Opening time is mandatory")
-    private LocalTime openTime;
+    private String openTime;
 
     @NotNull(message = "Closing time is mandatory")
-    private LocalTime closeTime;
+    private String closeTime;
 
     @Min(value = 0, message = "Delivery fee cannot be negative")
     private int deliveryFee;
@@ -71,28 +70,16 @@ public class ShopDto {
     private String detailAddress;
 
     @NotBlank(message = "Shop image is mandatory")
-    private String shopImage;
+    private MultipartFile shopImage;
 
     @NotNull(message = "Category is mandatory")
     private String categoryName;
 
-    public ShopDto(Shop shop) {
-        this.name = shop.getName();
-        this.phoneNum = shop.getPhoneNum();
-        this.shortDescription = shop.getShortDescription();
-        this.longDescription = shop.getLongDescription();
-        this.supportedOrderType = shop.getSupportedOrderType();
-        this.supportedPayment = shop.getSupportedPayment();
-        this.openTime = shop.getOpenTime();
-        this.closeTime = shop.getCloseTime();
-        this.deliveryFee = shop.getDeliveryFee();
-        this.minOrderPrice = shop.getMinOrderPrice();
-        this.shopStatus = shop.getShopStatus();
-        this.registerNumber = shop.getRegisterNumber();
-        this.doroAddress = shop.getDoroAddress();
-        this.doroIndex = shop.getDoroIndex();
-        this.detailAddress = shop.getDetailAddress();
-        this.shopImage = shop.getShopImage();
-        this.categoryName = shop.getCategory().getName();
+    public MultipartFile getShopImage() {
+        return shopImage;
+    }
+
+    public void setShopImage(MultipartFile shopImage) {
+        this.shopImage = shopImage;
     }
 }
