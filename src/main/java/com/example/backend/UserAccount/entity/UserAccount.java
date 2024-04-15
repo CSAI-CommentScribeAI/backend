@@ -38,6 +38,8 @@ public class UserAccount extends AuditingFields {
     @Column(length = 100)
     private String nickname;
 
+    private int address;
+
     private String memo;
 
     @Enumerated(EnumType.STRING)
@@ -52,13 +54,14 @@ public class UserAccount extends AuditingFields {
     private Set<Shop> shops = new LinkedHashSet<>();
 
     @Builder
-    public UserAccount(Long id, String userId, String password, String userName, String phone, String nickname, String memo, UserRole userRole, Set<UserAddress> userAddresses, Set<Shop> shops) {
+    public UserAccount(Long id, String userId, String password, String userName, String phone, String nickname,int address, String memo, UserRole userRole, Set<UserAddress> userAddresses, Set<Shop> shops) {
         this.id = id;
         this.userId = userId;
         this.password = password;
         this.userName = userName;
         this.phone = phone;
         this.nickname = nickname;
+        this.address = address;
         this.memo = memo;
         this.userRole = userRole;
         this.userAddresses = userAddresses != null ? userAddresses : new LinkedHashSet<>();

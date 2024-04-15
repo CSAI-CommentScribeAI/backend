@@ -1,10 +1,10 @@
 package com.example.backend.controller.userAccount;
 
+import com.example.backend.UserAccount.dto.UserAccountResponseDto;
 import com.example.backend.UserAccount.dto.UserAddressDto;
 
 import com.example.backend.service.userAccount.UserAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +19,21 @@ public class UserAddressController {
     private UserAddressService userAddressService;
 
     @PostMapping
-    public ResponseEntity<Long> createUserAddress(@RequestBody UserAddressDto userAddressDto, Authentication authentication) {
+    public ResponseEntity<UserAccountResponseDto> createUserAddress(@RequestBody UserAddressDto userAddressDto, Authentication authentication) {
         Long userAddressId = userAddressService.createUserAddress(userAddressDto, authentication);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userAddressId);
+        UserAccountResponseDto updated = userAddressService.updateMainAddress(userAddressId, authentication);
+        return ResponseEntity.ok(updated);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserAddressDto> updateUserAddress(@PathVariable Long id, @RequestBody UserAddressDto userAddressDto) {
         UserAddressDto updated = userAddressService.updateUserAddress(id, userAddressDto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PutMapping("/main-address-change/{id}")
+    public ResponseEntity<UserAccountResponseDto> updateMainAddress(@PathVariable Long id, Authentication authentication) {
+        UserAccountResponseDto updated = userAddressService.updateMainAddress(id, authentication);
         return ResponseEntity.ok(updated);
     }
 
@@ -40,5 +47,11 @@ public class UserAddressController {
     public ResponseEntity<List<UserAddressDto>> getAllUserAddresses(Authentication authentication) {
         List<UserAddressDto> addresses = userAddressService.getAllUserAddresses(authentication);
         return ResponseEntity.ok(addresses);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserAddressDto> getUserAddress(@PathVariable Long id) {
+        UserAddressDto address = userAddressService.getUserAddress(id);
+        return ResponseEntity.ok(address);
     }
 }

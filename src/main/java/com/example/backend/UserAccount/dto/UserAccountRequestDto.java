@@ -19,6 +19,7 @@ public class UserAccountRequestDto {
     private String nickname;
     private String userName;
     private String phone;
+    private int address;
     private String memo;
     private UserRole userRole; // UserRole 필드 추가
 
@@ -29,6 +30,7 @@ public class UserAccountRequestDto {
                 .nickname(nickname)
                 .userName(userName)
                 .phone(phone)
+                .address(address)
                 .memo(memo)
                 .userRole(userRole != null ? userRole : UserRole.ROLE_USER) // userRole이 null이 아닐 때 설정
                 .build();
