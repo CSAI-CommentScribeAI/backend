@@ -5,6 +5,8 @@ import com.example.backend.UserAccount.entity.UserAccount;
 import com.example.backend.UserAccount.dto.UserAccountResponseDto;
 import com.example.backend.UserAccount.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,13 +34,16 @@ public class UserAccountService {
     }
 
     @Transactional
-    public UserAccountResponseDto changeUserAccountPassword(String userId, String password, String newPassword) {
-        UserAccount userAccount = userAccountRepository.findById(SecurityUtil.getCurrentUserId())
-                .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
-        if (!passwordEncoder.matches(password, userAccount.getPassword())) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+    public UserAccountResponseDto changeUserAccountPassword(Authentication authentication, String password, String newPassword) {
+        if (authentication == null) {
+            throw new RuntimeException("Authentication information is not available.");
         }
-        userAccount.setPassword(passwordEncoder.encode(newPassword));
-        return UserAccountResponseDto.of(userAccountRepository.save(userAccount));
+
+        long userId = Long.parseLong(authentication.getName());
+        UserAccount authUser = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
+
+        authUser.setPassword(passwordEncoder.encode(newPassword));
+        return UserAccountResponseDto.of(userAccountRepository.save(authUser));
     }
 }

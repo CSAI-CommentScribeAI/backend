@@ -15,22 +15,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Builder
 public class UserAccountRequestDto {
     private String userId;
-    private String email;
     private String password;
     private String nickname;
     private String userName;
     private String phone;
+    private int address;
     private String memo;
     private UserRole userRole; // UserRole 필드 추가
 
     public UserAccount toUserAccount(PasswordEncoder passwordEncoder) {
         return UserAccount.builder()
                 .userId(userId)
-                .email(email)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)
                 .userName(userName)
                 .phone(phone)
+                .address(address)
                 .memo(memo)
                 .userRole(userRole != null ? userRole : UserRole.ROLE_USER) // userRole이 null이 아닐 때 설정
                 .build();
