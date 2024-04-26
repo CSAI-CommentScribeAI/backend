@@ -9,4 +9,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
     Optional<UserAccount> findByUserId(String userId);
     boolean existsByUserId(String userId);
+
+    Optional<Object> findByEmail(String email);
 }

@@ -1,5 +1,7 @@
 package com.example.backend.jwt;
 
+import com.example.backend.UserAccount.entity.UserAccount;
+import com.example.backend.UserAccount.repository.UserAccountRepository;
 import com.example.backend.jwt.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -20,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -32,13 +35,14 @@ public class TokenProvider {
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
     private final Key key;
     private final TokenStore tokenStore; // TokenStore 주입
+    private final UserAccountRepository userAccountRepository;
 
     @Autowired
-    public TokenProvider(Key secretKey, TokenStore tokenStore) {
+    public TokenProvider(Key secretKey, TokenStore tokenStore, UserAccountRepository userAccountRepository) {
         this.key = secretKey;
         this.tokenStore = tokenStore; // TokenStore 초기화
+        this.userAccountRepository = userAccountRepository;
     }
-
 
     // 토큰 생성
     public TokenDto generateTokenDto(Authentication authentication) {
@@ -51,8 +55,19 @@ public class TokenProvider {
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         Date refreshTokenExpiresIn = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
 
+        long userId = Long.parseLong(authentication.getName());
+        UserAccount userAccount = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
+
+        Claims claims = Jwts.claims();
+        claims.put("userId", userAccount.getUserId());
+        claims.put("email", userAccount.getEmail());
+        claims.put("nickname", userAccount.getNickname());
+        claims.put("roles", userAccount.getUserRole());
+
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
+                .setClaims(claims)
                 .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -65,8 +80,7 @@ public class TokenProvider {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
-        String userId = authentication.getName(); // 또는 리프레쉬 토큰과 연결된 고유한 사용자 ID
-        tokenStore.storeRefreshToken(userId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
+        tokenStore.storeRefreshToken(String.valueOf(userId), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
 
         return TokenDto.builder()
                 .grantType(BEARER_TYPE)
