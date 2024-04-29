@@ -2,84 +2,62 @@ package com.example.backend.UserAccount.entity;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import com.example.backend.shop.entity.Shop;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-@Getter
-@ToString
-@Table(indexes = {
-        @Index(columnList = "userId"),
-        @Index(columnList = "email", unique = true),
-        @Index(columnList = "createdAt"),
-        @Index(columnList = "createdBy")
-})
+import lombok.*;
+
 @Entity
+@Getter
+@Setter // 일관성을 위해 클래스 레벨에 Setter 적용
+@ToString
+@NoArgsConstructor // Lombok을 사용하여 기본 생성자 생성
+@Table(indexes = {
+        @Index(name = "idx_user_id", columnList = "userId"),
+        @Index(name = "idx_created_at", columnList = "createdAt"),
+        @Index(name = "idx_created_by", columnList = "createdBy")
+})
 public class UserAccount extends AuditingFields {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     @Column(nullable = false, length = 50)
     private String userId;
-    @Setter
-    @Column(nullable = false)
+
+    @Column
     private String password;
 
-    @Setter
-    @Column(length = 100)
+    @Column(nullable = false, length = 100)
     private String email;
-    @Setter
-    @Column(length = 100)
-    private String userName;
-    @Setter
-    @Column(length = 100)
-    private String phone;
-    @Setter
+
     @Column(length = 100)
     private String nickname;
-    @Setter
-    private String memo;
-    @Setter
+
+    private int address;
+
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
-    private final Set<UserAddress> userAddresses = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserAddress> userAddresses = new LinkedHashSet<>();
 
-    // 새로운 필드 추가: shops
     @ToString.Exclude
-    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
-    private final Set<Shop> shops = new LinkedHashSet<>();
-
-    protected UserAccount() {
-    }
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Shop> shops = new LinkedHashSet<>();
 
     @Builder
-    public UserAccount(Long id, String userId, String password, String email, String userName, String phone, String nickname, String memo, UserRole userRole) {
+    public UserAccount(Long id, String userId, String password, String email, String nickname,int address, UserRole userRole, Set<UserAddress> userAddresses, Set<Shop> shops) {
         this.id = id;
         this.userId = userId;
         this.password = password;
         this.email = email;
-        this.userName = userName;
-        this.phone = phone;
         this.nickname = nickname;
-        this.memo = memo;
+        this.address = address;
         this.userRole = userRole;
+        this.userAddresses = userAddresses != null ? userAddresses : new LinkedHashSet<>();
+        this.shops = shops != null ? shops : new LinkedHashSet<>();
     }
-
 }
