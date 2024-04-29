@@ -1,7 +1,7 @@
 package com.example.backend.service.userAccount;
 
-import com.example.backend.UserAccount.entity.UserAccount;
-import com.example.backend.UserAccount.repository.UserAccountRepository;
+import com.example.backend.entity.userAccount.UserAccount;
+import com.example.backend.repository.UserAccount.UserAccountRepository;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

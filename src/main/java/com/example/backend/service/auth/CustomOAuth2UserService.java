@@ -1,19 +1,20 @@
 package com.example.backend.service.auth;
 
-import com.example.backend.UserAccount.dto.GoogleResponse;
-import com.example.backend.UserAccount.dto.NaverResponse;
-import com.example.backend.UserAccount.dto.OAuth2Response;
-import com.example.backend.UserAccount.dto.OAuth2UserDTO;
-import com.example.backend.UserAccount.entity.UserAccount;
-import com.example.backend.UserAccount.entity.UserRole;
-import com.example.backend.UserAccount.repository.UserAccountRepository;
+import com.example.backend.dto.userAccount.CustomOAuth2User;
+import com.example.backend.dto.userAccount.GoogleResponse;
+import com.example.backend.dto.userAccount.NaverResponse;
+import com.example.backend.dto.userAccount.OAuth2Response;
+import com.example.backend.dto.userAccount.OAuth2UserDTO;
+
+import com.example.backend.entity.userAccount.UserAccount;
+import com.example.backend.entity.userAccount.UserRole;
+import com.example.backend.repository.UserAccount.UserAccountRepository;
 import java.util.Optional;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import com.example.backend.UserAccount.dto.CustomOAuth2User;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {

@@ -1,7 +1,7 @@
 package com.example.backend.jwt;
 
-import com.example.backend.UserAccount.entity.UserAccount;
-import com.example.backend.UserAccount.repository.UserAccountRepository;
+import com.example.backend.entity.userAccount.UserAccount;
+import com.example.backend.repository.UserAccount.UserAccountRepository;
 import com.example.backend.jwt.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

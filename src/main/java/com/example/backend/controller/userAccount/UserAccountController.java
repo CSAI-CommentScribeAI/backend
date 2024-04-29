@@ -1,8 +1,9 @@
 package com.example.backend.controller.userAccount;
 
-import com.example.backend.UserAccount.dto.ChangePasswordRequestDto;
-import com.example.backend.UserAccount.dto.UserAccountRequestDto;
-import com.example.backend.UserAccount.dto.UserAccountResponseDto;
+
+import com.example.backend.dto.userAccount.ChangePasswordRequestDto;
+import com.example.backend.dto.userAccount.UserAccountRequestDto;
+import com.example.backend.dto.userAccount.UserAccountResponseDto;
 import com.example.backend.service.userAccount.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,9 +1,9 @@
 package com.example.backend.service.userAccount;
 
 import com.example.backend.config.security.SecurityUtil;
-import com.example.backend.UserAccount.entity.UserAccount;
-import com.example.backend.UserAccount.dto.UserAccountResponseDto;
-import com.example.backend.UserAccount.repository.UserAccountRepository;
+import com.example.backend.dto.userAccount.UserAccountResponseDto;
+import com.example.backend.entity.userAccount.UserAccount;
+import com.example.backend.repository.UserAccount.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
