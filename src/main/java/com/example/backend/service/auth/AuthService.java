@@ -1,13 +1,13 @@
 package com.example.backend.service.auth;
 
 
-import com.example.backend.UserAccount.entity.UserAccount;
+import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.jwt.TokenStore;
 import com.example.backend.jwt.dto.TokenDto;
-import com.example.backend.UserAccount.dto.UserAccountRequestDto;
-import com.example.backend.UserAccount.dto.UserAccountResponseDto;
+import com.example.backend.dto.userAccount.UserAccountRequestDto;
+import com.example.backend.dto.userAccount.UserAccountResponseDto;
 import com.example.backend.jwt.TokenProvider;
-import com.example.backend.UserAccount.repository.UserAccountRepository;
+import com.example.backend.repository.UserAccount.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

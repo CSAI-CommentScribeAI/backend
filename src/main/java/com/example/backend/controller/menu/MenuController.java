@@ -1,79 +1,44 @@
 package com.example.backend.controller.menu;
 
-import com.example.backend.menu.dto.FoodInformationRequest;
-import com.example.backend.menu.entity.Food;
-import com.example.backend.root.ApiResponse;
-import com.example.backend.service.menu.FoodService;
+import com.example.backend.dto.ResponseDTO;
+import com.example.backend.dto.menu.MenuInsertDTO;
+import com.example.backend.dto.menu.MenuUpdateDTO;
+import com.example.backend.service.menu.MenuService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-import java.io.IOException;
-import java.net.URI;
-
 @RestController
-@RequestMapping("api/v1/shops")
+@RequestMapping("api/v1/menu")
+@RequiredArgsConstructor
 public class MenuController {
 
-    private final FoodService foodService;
+    private final MenuService menuService;
 
-    public MenuController(FoodService foodService) {
-        this.foodService = foodService;
+    @GetMapping("/{menuId}")
+    public ResponseDTO<?> selectMenu(@PathVariable Long menuId){
+        return menuService.selectMenu(menuId);
     }
 
-    @PostMapping("/{shopId}/foods/register")
-    public ResponseEntity<ApiResponse<Food>> createFood(
-            @PathVariable Long shopId,
-            @Valid FoodInformationRequest request,
-            @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-
-        Long userId = getUserIdFromAuthentication();
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.fail("Unauthorized"));
-        }
-
-        Food food = foodService.createFood(shopId, request, imageFile);
-        return ResponseEntity
-                .created(URI.create("/api/v1/shops/foods/" + shopId + "/" + food.getId()))
-                .body(ApiResponse.success(food));
+    @PostMapping("/")
+    public ResponseDTO<?> insertMenu(Authentication authentication,
+                                     @ModelAttribute MenuInsertDTO menuDTO,
+                                     @RequestPart("file") MultipartFile multipartFile){
+        return new ResponseDTO<>(HttpStatus.OK.value(), menuService.addMenu(authentication, menuDTO, multipartFile));
     }
 
-    @DeleteMapping("/{shopId}/foods/{foodId}")
-    public ResponseEntity<ApiResponse<Void>> deleteFood(
-            @PathVariable Long shopId,
-            @PathVariable Long foodId) {
-
-        Long userId = getUserIdFromAuthentication();
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.fail("Unauthorized"));
-        }
-
-        foodService.deleteFood(foodId);
-        return ResponseEntity.ok(ApiResponse.success(null, "Food deleted."));
+    @PutMapping("/{menuId}")
+    public ResponseDTO<?> updateMenu(Authentication authentication,
+                                     @PathVariable Long menuId,
+                                     @RequestBody MenuUpdateDTO menuDTO){
+        return new ResponseDTO<>(HttpStatus.OK.value(), menuService.updateMenu(authentication, menuId, menuDTO));
     }
 
-    @PutMapping("/{shopId}/foods/{foodId}")
-    public ResponseEntity<ApiResponse<Food>> updateFood(
-            @PathVariable Long shopId,
-            @PathVariable Long foodId,
-            @Valid FoodInformationRequest request,
-            @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-
-        Long userId = getUserIdFromAuthentication();
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.fail("Unauthorized"));
-        }
-
-        Food food = foodService.updateFood(shopId, foodId, request, imageFile);
-        return ResponseEntity.ok(ApiResponse.success(food));
-    }
-
-    private Long getUserIdFromAuthentication() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return 1L;
+    @DeleteMapping("/{menuId}")
+    public ResponseDTO<?> deleteMenu(Authentication authentication,
+                                     @PathVariable Long menuId){
+        return new ResponseDTO<>(HttpStatus.OK.value(), menuService.deleteMenu(authentication, menuId));
     }
 }

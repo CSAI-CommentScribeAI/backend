@@ -1,6 +1,5 @@
 package com.example.backend.oauth2;
 
-import com.example.backend.UserAccount.dto.CustomOAuth2User;
 import com.example.backend.jwt.TokenProvider;
 import com.example.backend.jwt.dto.TokenDto;
 import java.io.IOException;
