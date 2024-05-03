@@ -2,12 +2,14 @@ package com.example.backend.service.store;
 
 import com.example.backend.dto.store.*;
 import com.example.backend.entity.store.Store;
+import com.example.backend.entity.store.StoreAddress;
 import com.example.backend.entity.userAccount.UserAccount;
-import com.example.backend.entity.userAccount.UserAddress;
 import com.example.backend.entity.userAccount.UserRole;
 import com.example.backend.exception.store.AlreadyStoreBossAssignException;
 import com.example.backend.exception.store.StoreNotFoundException;
+import com.example.backend.jwt.TokenStore;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
+import com.example.backend.repository.store.StoreAddressRepository;
 import com.example.backend.repository.store.StoreRepository;
 import com.example.backend.service.aws.AwsS3Service;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,8 @@ public class StoreService {
     private final UserAccountRepository userAccountRepository;
     private final StoreRepository storeRepository;
     private final AwsS3Service s3Service;
+    private final StoreAddressRepository storeAddressRepository;
+
     public static StoreSearchResponseDTO entityToDTO(Store s){
         return StoreSearchResponseDTO.builder()
                 .id(s.getId())
@@ -39,36 +43,53 @@ public class StoreService {
                 .minOrderPrice(s.getMinOrderPrice())
                 .category(s.getCategory())
                 .info(s.getInfo())
-                .userAddress(s.getUserAddress())
+                .storeAddress(s.getStoreAddress())
                 .storeImageUrl(s.getStoreImageUrl())
                 .build();
     }
-
-
     @Transactional
     public StoreDTO insert(Authentication authentication, StoreInsertDTO storeDTO, MultipartFile multipartFile) {
         String userId = authentication.getName();
 
-        // 사용자 계정을 조회합니다.
+        // 사용자 계정을 데이터베이스에서 조회합니다.
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
 
-        // 이미지를 S3에 업로드합니다.
         String imgPath = s3Service.uploadStoreImage("store", multipartFile);
 
-        // 매장 엔티티를 생성합니다.
+        // Store를 먼저 저장하고 ID를 받아옴
         Store store = Store.builder()
                 .name(storeDTO.getName())
                 .minOrderPrice(storeDTO.getMinOrderPrice())
                 .storeImageUrl(imgPath)
                 .category(storeDTO.getCategory())
                 .info(storeDTO.getInfo())
-                .businessLicense(storeDTO.getBusinessLicense())
+                .businessLicense(Integer.parseInt((storeDTO.getBusinessLicense())))
                 .userAccount(userAccount)
                 .build();
 
-        // 매장을 저장합니다.
         store = storeRepository.save(store);
+
+        // Store 엔티티의 ID를 사용하여 StoreAddress를 생성하여 저장
+        StoreAddress storeAddress = StoreAddress.builder()
+                .fullAddress(storeDTO.getFullAddress())
+                .roadAddress(storeDTO.getRoadAddress())
+                .jibunAddress(storeDTO.getJibunAddress())
+                .postalCode(storeDTO.getPostalCode())
+                .latitude(storeDTO.getLatitude())
+                .longitude(storeDTO.getLongitude())
+                .store(store) // Store 엔티티와 연결
+                .build();
+
+        // StoreAddress 엔티티를 저장
+        storeAddress = storeAddressRepository.save(storeAddress);
+
+        // Store 엔티티에 StoreAddress의 ID를 설정하여 매핑
+        store.setStoreAddress(storeAddress);
+        userAccount.setStore(store); // 사용자 계정에 매장 엔티티 설정
+
+        // 사용자 계정 업데이트
+        userAccountRepository.save(userAccount);
 
         return StoreDTO.entityToDTO(store);
     }
@@ -97,7 +118,7 @@ public class StoreService {
 
         // 사용자 계정을 데이터베이스에서 조회합니다.
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
 
         // 사용자의 역할이 ROLE_OWNER가 아니라면 예외를 던집니다.
         if (userAccount.getUserRole() != UserRole.ROLE_OWNER) {
@@ -106,7 +127,7 @@ public class StoreService {
 
         // Store 엔티티를 데이터베이스에서 조회합니다.
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreNotFoundException());
+                .orElseThrow(StoreNotFoundException::new);
 
         // Store 엔티티를 업데이트합니다.
         store.setName(storeDTO.getName());
@@ -126,7 +147,7 @@ public class StoreService {
 
         // 사용자 계정을 데이터베이스에서 조회합니다.
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
 
         // 사용자의 역할이 ROLE_OWNER가 아니라면 예외를 던집니다.
         if (userAccount.getUserRole() != UserRole.ROLE_OWNER) {
@@ -135,7 +156,7 @@ public class StoreService {
 
         // Store 엔티티를 데이터베이스에서 조회합니다.
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreNotFoundException());
+                .orElseThrow(StoreNotFoundException::new);
 
         // Store 엔티티를 삭제합니다.
         storeRepository.delete(store);
@@ -147,4 +168,5 @@ public class StoreService {
                 .map(StoreSearchResponseDTO::entityToDTO)
                 .collect(Collectors.toList());
     }
+    
 }

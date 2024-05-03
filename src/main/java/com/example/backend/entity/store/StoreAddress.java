@@ -1,24 +1,25 @@
-package com.example.backend.entity.userAccount;
+package com.example.backend.entity.store;
+
+import com.example.backend.entity.TimeZone;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
-
-import com.example.backend.dto.userAccount.UserAccountResponseDto;
-import lombok.*;
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class UserAddress {
-
+public class StoreAddress extends TimeZone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "user_account_id", unique = true)
-    private UserAccount userAccount; // 유저 정보 (ID)
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", unique = true)
+    private Store store;
 
     @Column(nullable = false)
     private String fullAddress; // 전체 주소
@@ -34,6 +35,4 @@ public class UserAddress {
     private Double latitude; // 위도
 
     private Double longitude; // 경도
-
-
 }

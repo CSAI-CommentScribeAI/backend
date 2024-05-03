@@ -59,15 +59,8 @@ public class TokenProvider {
         UserAccount userAccount = userAccountRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
 
-        Claims claims = Jwts.claims();
-        claims.put("userId", userAccount.getUserId());
-        claims.put("email", userAccount.getEmail());
-        claims.put("nickname", userAccount.getNickname());
-        claims.put("roles", userAccount.getUserRole());
-
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
-                .setClaims(claims)
                 .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)

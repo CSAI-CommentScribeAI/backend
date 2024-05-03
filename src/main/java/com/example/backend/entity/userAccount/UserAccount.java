@@ -1,16 +1,15 @@
 package com.example.backend.entity.userAccount;
 
-import com.example.backend.entity.store.Store;
+import javax.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.persistence.*;
-import lombok.*;
 
-@Entity
+import com.example.backend.entity.store.Store;
+import lombok.*;@Entity
 @Getter
-@Setter // 일관성을 위해 클래스 레벨에 Setter 적용
+@Setter
+@NoArgsConstructor
 @ToString
-@NoArgsConstructor // Lombok을 사용하여 기본 생성자 생성
 @Table(indexes = {
         @Index(name = "idx_user_id", columnList = "userId"),
         @Index(name = "idx_created_at", columnList = "createdAt"),
@@ -34,29 +33,37 @@ public class UserAccount extends AuditingFields {
     @Column(length = 100)
     private String nickname;
 
-    private int address;
-
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserAddress> userAddresses = new LinkedHashSet<>();
+    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_address_id")
+    private UserAddress userAddress;
+
+    @Column(name = "store_id")
+    private Long storeId; // 매장 ID
 
     @ToString.Exclude
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Store> stores = new LinkedHashSet<>();
 
     @Builder
-    public UserAccount(Long id, String userId, String password, String email, String nickname, int address, UserRole userRole, Set<UserAddress> userAddresses, Set<Store> stores) {
+    public UserAccount(Long id, String userId, String password, String email, String nickname, UserRole userRole, UserAddress userAddress, Long storeId) {
         this.id = id;
         this.userId = userId;
         this.password = password;
         this.email = email;
         this.nickname = nickname;
-        this.address = address;
         this.userRole = userRole;
-        this.userAddresses = userAddresses != null ? userAddresses : new LinkedHashSet<>();
+        this.userAddress = userAddress;
+        this.storeId = storeId; // 매장 ID 설정
         this.stores = stores != null ? stores : new LinkedHashSet<>();
+    }
+    public void setUserAddress(int intExact) {
+        this.userAddress=userAddress;
+    }
+
+    public void setStore(Store store) {
+        this.storeId = store.getId();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.backend.dto.store;
 
 import com.example.backend.entity.store.Store;
+import com.example.backend.entity.store.StoreAddress;
 import com.example.backend.entity.userAccount.UserAddress;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,7 @@ public class StoreInOrderDTO {
     private String name; // 매장명
     private int minOrderPrice; // 최소 주문금액
     private String StoreImageUrl; // 배경 이미지
-    private UserAddress userAddress;
+    private StoreAddress storeAddress;
 
     public static StoreInOrderDTO entityToDTO(Store store){
         return StoreInOrderDTO.builder()
@@ -24,7 +25,7 @@ public class StoreInOrderDTO {
                 .name(store.getName())
                 .minOrderPrice(store.getMinOrderPrice())
                 .StoreImageUrl(store.getStoreImageUrl())
-                .userAddress(store.getUserAddress())
+                .storeAddress(store.getStoreAddress())
                 .build();
     }
 }
