@@ -15,13 +15,14 @@ public class MenuInsertDTO {
     private String name;
     private int price;
     private String menuDetail;
-    private MultipartFile imageUrl; // 이미지를 받아들이는 필드로 변경
+    private String imageUrl; // 이미지를 받아들이는 필드로 변경
 
     public Menu dtoToEntity(){
         return Menu.builder()
                 .name(name)
                 .price(price)
                 .menuDetail(menuDetail)
+                .imageUrl(imageUrl)
                 .visible(true)
                 .build();
     }

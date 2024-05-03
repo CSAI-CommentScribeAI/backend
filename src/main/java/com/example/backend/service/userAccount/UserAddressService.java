@@ -6,7 +6,6 @@ import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.entity.userAccount.UserAddress;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
 import com.example.backend.repository.UserAccount.UserAddressRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -18,11 +17,14 @@ import java.util.stream.Collectors;
 @Service
 public class UserAddressService {
 
-    @Autowired
-    private UserAddressRepository userAddressRepository;
+    private final UserAddressRepository userAddressRepository;
 
-    @Autowired
-    private UserAccountRepository userAccountRepository;
+    private final UserAccountRepository userAccountRepository;
+
+    public UserAddressService(UserAddressRepository userAddressRepository, UserAccountRepository userAccountRepository) {
+        this.userAddressRepository = userAddressRepository;
+        this.userAccountRepository = userAccountRepository;
+    }
 
     @Transactional
     public Long createUserAddress(UserAddressDto userAddressDto, Authentication authentication) {
@@ -72,7 +74,7 @@ public class UserAddressService {
         UserAccount userAccount = userAccountRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
 
-        userAccount.setAddress(Math.toIntExact(id));
+        userAccount.setUserAddress(Math.toIntExact(id));
 
         return UserAccountResponseDto.of(userAccountRepository.save(userAccount));
     }

@@ -35,7 +35,10 @@ public class SecurityConfig {
     private final CustomSuccessHandler customSuccessHandler;
 
     // 명시적으로 생성자를 정의
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler,
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
+                          TokenProvider tokenProvider,
+                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+                          JwtAccessDeniedHandler jwtAccessDeniedHandler,
                           CustomSuccessHandler customSuccessHandler) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.tokenProvider = tokenProvider;

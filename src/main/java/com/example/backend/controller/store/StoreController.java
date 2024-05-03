@@ -1,12 +1,12 @@
 package com.example.backend.controller.store;
 
-import com.example.backend.exception.store.StoreNotFoundException;
 import com.example.backend.dto.ResponseDTO;
 import com.example.backend.dto.store.CategoryDTO;
 import com.example.backend.dto.store.StoreDTO;
 import com.example.backend.dto.store.StoreInsertDTO;
 import com.example.backend.dto.store.StoreSearchReqeustDTO;
 import com.example.backend.entity.store.Category;
+import com.example.backend.exception.store.StoreNotFoundException;
 import com.example.backend.service.store.StoreService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class StoreController {
     @PostMapping("/")
     public ResponseDTO<?> insert(Authentication authentication,
                                  @ModelAttribute StoreInsertDTO storeDTO,
-                                 @RequestPart(value = "file") MultipartFile multipartFile) throws IOException {
+                                 @RequestPart(value = "file") MultipartFile multipartFile) {
         try {
             // 사용자가 인증되어 있는지 확인합니다.
             if (authentication == null) {

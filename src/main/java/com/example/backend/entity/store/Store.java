@@ -3,7 +3,6 @@ package com.example.backend.entity.store;
 import com.example.backend.entity.TimeZone;
 import com.example.backend.entity.menu.Menu;
 import com.example.backend.entity.userAccount.UserAccount;
-import com.example.backend.entity.userAccount.UserAddress;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -36,12 +35,12 @@ public class Store extends TimeZone {
     @Lob
     private String info; // 가게 정보
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_address_id")
-    private UserAddress userAddress;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL) // Store와의 일대일 매핑
+    @JoinColumn(name = "store_address_id", referencedColumnName = "id") // StoreAddress 테이블의 id를 참조합니다.
+    private StoreAddress storeAddress; // Store와의 일대일 매핑
 
-    @Column(length = 10)
-    private String businessLicense; // 사업자 등록증
+    @Column(length = 10, unique = true) // 고유값으로 설정
+    private int businessLicense; // 사업자 등록증
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id") // 외래 키 제약 조건 추가
@@ -54,9 +53,10 @@ public class Store extends TimeZone {
 
     private String grade; // 매장 평점
 
-    public String getBusinessLicense() {
+    public int getBusinessLicense() {
         return this.businessLicense;
     }
+
     // 메뉴 삭제
     public void removeMenu() {
         for (Menu m : menus) {
@@ -65,23 +65,17 @@ public class Store extends TimeZone {
         menus = null;
     }
 
-    // setUserAddress 메서드 추가
-    public void setUserAddress(UserAddress userAddress) {
-        this.userAddress = userAddress;
-    }
-
     // 메뉴를 추가할 때 양방향 관계 설정
     public void addMenu(Menu menu) {
         menu.setStore(this); // 메뉴에 매장 설정
         this.menus.add(menu); // 매장에 메뉴 추가
     }
+
     public void deleteMenu(Menu menu) {
         if (this.menus.contains(menu)) {
             this.menus.remove(menu);
         }
     }
-
-
 
     // 사용자의 역할을 확인하여 매장 등록 권한을 부여하는 메서드
     public void registerStore(UserAccount userAccount) {

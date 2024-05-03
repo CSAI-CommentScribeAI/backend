@@ -2,6 +2,7 @@ package com.example.backend.dto.store;
 
 import com.example.backend.entity.store.Category;
 import com.example.backend.entity.store.Store;
+import com.example.backend.entity.store.StoreAddress;
 import com.example.backend.entity.userAccount.UserAddress;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ public class StoreSearchResponseDTO {
     private String storeImageUrl; // 배경 이미지
     private Category category;
     private String info;
-    private UserAddress userAddress;
+    private StoreAddress storeAddress;
 
     public static StoreSearchResponseDTO entityToDTO(Store s){
         return StoreSearchResponseDTO.builder()
@@ -28,7 +29,7 @@ public class StoreSearchResponseDTO {
                 .minOrderPrice(s.getMinOrderPrice())
                 .category(s.getCategory())
                 .info(s.getInfo())
-                .userAddress(s.getUserAddress())
+                .storeAddress(s.getStoreAddress())
                 .storeImageUrl(s.getStoreImageUrl())
                 .build();
     }

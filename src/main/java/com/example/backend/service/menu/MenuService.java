@@ -19,9 +19,6 @@ import com.example.backend.repository.menu.MenuRepository;
 import com.example.backend.repository.store.StoreRepository;
 import com.example.backend.service.aws.AwsS3Service;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -42,18 +39,13 @@ public class MenuService {
     private final StoreRepository storeRepository;
     private final MenuOptionRepository menuOptionRepository;
     private final MenuConnectRepository menuConnectRepository;
-    @Autowired
     private final AwsS3Service s3Service;
-
-    private static final Logger log = LoggerFactory.getLogger(MenuService.class);
 
     public ResponseDTO<?> selectMenu(Long menuId){
 
         Map<String, Object> m = new HashMap<>();
 
-        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> {
-            throw new MenuNotFoundException();
-        });
+        Menu menu = menuRepository.findById(menuId).orElseThrow(MenuNotFoundException::new);
 
         List<MenuOptionTitle> motList = menuConnectRepository.findByMenu(menu);
         for(MenuOptionTitle mot : motList) {
@@ -73,23 +65,22 @@ public class MenuService {
 
         // 사용자 계정을 데이터베이스에서 조회
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
 
         // 사용자의 역할이 ROLE_OWNER가 아니라면 예외 발생
         if (userAccount.getUserRole() != UserRole.ROLE_OWNER) {
-            throw new IllegalStateException("User does not have permission to register a store.");
+            throw new IllegalStateException("가게를 등록할 권한이 없습니다.");
         }
 
         // 매장 조회
-        Store store = storeRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new StoreNotFoundException());
+        Store store = storeRepository.findById(Long.valueOf(userId)).orElseThrow(StoreNotFoundException::new);
 
         // 이미지를 S3에 업로드
-        String imgPath = s3Service.uploadMenuImage("menu", multipartFile);
-        log.info("menu insert imgSource : {}", imgPath);
-        menuDTO.setImageUrl(multipartFile);
+        String imageUrl = s3Service.uploadMenuImage("menu", multipartFile);
 
         // 메뉴 생성 및 저장
         Menu menu = menuDTO.dtoToEntity();
+        menu.setImageUrl(imageUrl); // 이미지 경로 설정
         menu.setStore(store);
         menuRepository.save(menu);
 
@@ -103,22 +94,22 @@ public class MenuService {
 
         // 사용자 계정을 데이터베이스에서 조회
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
 
         // 사용자의 역할이 ROLE_OWNER가 아니라면 예외 발생
         if (userAccount.getUserRole() != UserRole.ROLE_OWNER) {
-            throw new IllegalStateException("User does not have permission to register a store.");
+            throw new IllegalStateException("가게를 등록할 권한이 없습니다.");
         }
 
         // 매장 조회
-        Store store = storeRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new StoreNotFoundException());
+        Store store = storeRepository.findById(Long.valueOf(userId)).orElseThrow(StoreNotFoundException::new);
 
         // 메뉴 조회
-        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new MenuNotFoundException());
+        Menu menu = menuRepository.findById(menuId).orElseThrow(MenuNotFoundException::new);
 
         // 메뉴가 해당 매장에 속하는지 확인
         if(!store.equals(menu.getStore())) {
-            throw new IllegalArgumentException("Menu does not belong to the store");
+            throw new IllegalArgumentException("메뉴가 해당 가게에 속하지 않습니다.");
         }
 
         // 메뉴 정보 업데이트
@@ -137,15 +128,15 @@ public class MenuService {
 
         // 사용자 계정을 데이터베이스에서 조회
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
 
         // 사용자의 역할이 ROLE_OWNER가 아니라면 예외 발생
         if (userAccount.getUserRole() != UserRole.ROLE_OWNER) {
-            throw new IllegalStateException("User does not have permission to register a store.");
+            throw new IllegalStateException("가게를 등록할 권한이 없습니다.");
         }
 
         // 메뉴 조회
-        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new MenuNotFoundException());
+        Menu menu = menuRepository.findById(menuId).orElseThrow(MenuNotFoundException::new);
 
         // 메뉴를 매장에서 삭제
         menu.getStore().deleteMenu(menu);
@@ -154,7 +145,7 @@ public class MenuService {
         try {
             menuRepository.delete(menu);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Error deleting menu", e);
+            throw new IllegalArgumentException("메뉴 삭제 중 오류가 발생했습니다.", e);
         }
 
         return "메뉴가 삭제되었습니다.";
