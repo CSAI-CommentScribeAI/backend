@@ -24,9 +24,10 @@ public class MenuController {
 
     @PostMapping("/")
     public ResponseDTO<?> addMenu(Authentication authentication,
-                                     @ModelAttribute MenuInsertDTO menuDTO,
-                                     @RequestPart("file") MultipartFile multipartFile){
-        return new ResponseDTO<>(HttpStatus.OK.value(), menuService.addMenu(authentication, menuDTO, multipartFile));
+                                  @ModelAttribute MenuInsertDTO menuDTO,
+                                  @RequestParam("file") MultipartFile multipartFile,
+                                  @RequestParam("storeId") Long storeId) {
+        return new ResponseDTO<>(HttpStatus.OK.value(), menuService.addMenu(authentication, menuDTO, multipartFile, storeId));
     }
 
     @PutMapping("/{menuId}")

@@ -37,7 +37,6 @@ public class Menu extends TimeZone {
         }
     }
 
-    // Store와의 관계 해제 메서드
     public void removeStore() {
         if (store != null) {
             store.getMenus().remove(this);

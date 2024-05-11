@@ -35,4 +35,10 @@ public class StoreAddress extends TimeZone {
     private Double latitude; // 위도
 
     private Double longitude; // 경도
+
+    private Double distance;//거리 정보(km단위 저장)
+
+    public void setDistance(Double distance){
+        this.distance = distance;
+    }
 }

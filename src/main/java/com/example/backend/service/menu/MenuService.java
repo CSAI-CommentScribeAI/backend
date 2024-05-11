@@ -59,7 +59,7 @@ public class MenuService {
     }
 
     @Transactional
-    public StoreDTO addMenu(Authentication authentication, MenuInsertDTO menuDTO, MultipartFile multipartFile){
+    public StoreDTO addMenu(Authentication authentication, MenuInsertDTO menuDTO, MultipartFile multipartFile, Long storeId) {
         // 사용자의 ID 가져오기
         String userId = authentication.getName();
 
@@ -71,11 +71,14 @@ public class MenuService {
         if (userAccount.getUserRole() != UserRole.ROLE_OWNER) {
             throw new IllegalStateException("가게를 등록할 권한이 없습니다.");
         }
-
         // 매장 조회
-        Store store = storeRepository.findById(Long.valueOf(userId)).orElseThrow(StoreNotFoundException::new);
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreNotFoundException());
 
-        // 이미지를 S3에 업로드
+        // 이미지 업로드 및 확인
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            throw new IllegalArgumentException("이미지 파일이 제공되지 않았습니다.");
+        }
         String imageUrl = s3Service.uploadMenuImage("menu", multipartFile);
 
         // 메뉴 생성 및 저장
@@ -86,6 +89,7 @@ public class MenuService {
 
         return StoreDTO.entityToDTO(store);
     }
+
 
     @Transactional
     public StoreDTO updateMenu(Authentication authentication, Long menuId, MenuUpdateDTO menuDTO){

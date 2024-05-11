@@ -74,7 +74,11 @@ public class UserAddressService {
         UserAccount userAccount = userAccountRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
 
-        userAccount.setUserAddress(Math.toIntExact(id));
+        // 새로운 주소를 찾아서 주요 주소로 설정합니다.
+        UserAddress userAddress = userAddressRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("UserAddress not found"));
+
+        userAccount.getUserAddresses();
 
         return UserAccountResponseDto.of(userAccountRepository.save(userAccount));
     }

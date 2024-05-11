@@ -2,8 +2,8 @@ package com.example.backend.entity.userAccount;
 
 import javax.persistence.*;
 
-import com.example.backend.dto.userAccount.UserAccountResponseDto;
 import lombok.*;
+
 @Entity
 @Getter
 @Setter
@@ -16,8 +16,7 @@ public class UserAddress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "user_account_id", unique = true)
+    @ManyToOne(optional = false)
     private UserAccount userAccount; // 유저 정보 (ID)
 
     @Column(nullable = false)
@@ -34,6 +33,4 @@ public class UserAddress {
     private Double latitude; // 위도
 
     private Double longitude; // 경도
-
-
 }
