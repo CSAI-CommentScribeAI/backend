@@ -55,5 +55,8 @@ public class Message {
     // review
     public static final String REVIEW_NOT_FOUND = "리뷰를 찾지 못했습니다.";
     public static final String REVIEW_ALREADY_EXISTS = "리뷰가 이미 존재합니다.";
+
+    public static final String CART_NOT_FOUND =  "사용자의 장바구니 정보를 찾을 수 없습니다.";
+
 }
 

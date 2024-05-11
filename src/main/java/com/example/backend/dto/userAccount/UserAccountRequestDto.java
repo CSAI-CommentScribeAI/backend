@@ -1,7 +1,6 @@
 package com.example.backend.dto.userAccount;
 
 import com.example.backend.entity.userAccount.UserAccount;
-import com.example.backend.entity.userAccount.UserAddress;
 import com.example.backend.entity.userAccount.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +18,7 @@ public class UserAccountRequestDto {
     private String password;
     private String email;
     private String nickname;
-    private UserAddress userAddress;
+    private int address;
     private UserRole userRole; // UserRole 필드 추가
 
     public UserAccount toUserAccount(PasswordEncoder passwordEncoder) {
@@ -28,11 +27,10 @@ public class UserAccountRequestDto {
                 .password(passwordEncoder.encode(password))
                 .email(email)
                 .nickname(nickname)
-                .userAddress(userAddress) // Corrected field name
-                .userRole(userRole != null ? userRole : UserRole.ROLE_USER)
+                .address(address)
+                .userRole(userRole != null ? userRole : UserRole.ROLE_USER) // userRole이 null이 아닐 때 설정
                 .build();
     }
-
 
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(userId, password);

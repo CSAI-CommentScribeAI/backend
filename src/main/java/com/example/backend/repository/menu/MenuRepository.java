@@ -1,6 +1,7 @@
 package com.example.backend.repository.menu;
 
 import com.example.backend.entity.menu.Menu;
+import com.example.backend.entity.order.OrderMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
