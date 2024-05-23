@@ -1,7 +1,7 @@
 package com.example.backend.service.userAccount;
 
 import com.example.backend.config.security.SecurityUtil;
-import com.example.backend.dto.userAccount.UserAccountResponseDto;
+import com.example.backend.dto.userAccount.UserAccountResponseDTO;
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,22 +19,22 @@ public class UserAccountService {
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserAccountResponseDto getMyInfoBySecurity() {
+    public UserAccountResponseDTO getMyInfoBySecurity() {
         return userAccountRepository.findById(SecurityUtil.getCurrentUserId())
-                .map(UserAccountResponseDto::of)
+                .map(UserAccountResponseDTO::of)
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
     }
 
     @Transactional
-    public UserAccountResponseDto changeUserAccountNickname(String userId, String nickname) {
+    public UserAccountResponseDTO changeUserAccountNickname(String userId, String nickname) {
         UserAccount userAccount = userAccountRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
         userAccount.setNickname(nickname);
-        return UserAccountResponseDto.of(userAccountRepository.save(userAccount));
+        return UserAccountResponseDTO.of(userAccountRepository.save(userAccount));
     }
 
     @Transactional
-    public UserAccountResponseDto changeUserAccountPassword(Authentication authentication, String password, String newPassword) {
+    public UserAccountResponseDTO changeUserAccountPassword(Authentication authentication, String password, String newPassword) {
         if (authentication == null) {
             throw new RuntimeException("Authentication information is not available.");
         }
@@ -44,6 +44,6 @@ public class UserAccountService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
 
         authUser.setPassword(passwordEncoder.encode(newPassword));
-        return UserAccountResponseDto.of(userAccountRepository.save(authUser));
+        return UserAccountResponseDTO.of(userAccountRepository.save(authUser));
     }
 }

@@ -1,6 +1,7 @@
 package com.example.backend.entity.order;
 
 import com.example.backend.entity.TimeZone;
+import com.example.backend.entity.comment.Review;
 import com.example.backend.entity.store.Store;
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.entity.userAccount.UserAddress;
@@ -42,6 +43,9 @@ public class Order extends TimeZone {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderMenu> orderMenus;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Review review;  // Order와 Review의 일대일 관계
 
     public UserAccount getUserAccount() {
         return userAccount;

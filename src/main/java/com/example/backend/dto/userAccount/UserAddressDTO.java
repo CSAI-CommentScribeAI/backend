@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserAddressDto {
+public class UserAddressDTO {
 
     @NotBlank(message = "Full address is mandatory")
     @Size(min = 1, max = 200, message = "Full address length must be between 1 and 200")
@@ -27,6 +27,9 @@ public class UserAddressDto {
     @NotBlank(message = "Postal code is mandatory")
     @Size(min = 1, max = 20, message = "Postal code length must be between 1 and 20")
     private String postalCode; // 우편번호
+
+    @Size(max = 500, message = "Detail address length must be up to 200")
+    private String detailAddress; // 상세 주소
 
     @NotNull(message = "Latitude is mandatory")
     private Double latitude; // 위도
