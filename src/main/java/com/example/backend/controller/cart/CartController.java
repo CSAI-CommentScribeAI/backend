@@ -4,7 +4,7 @@ import com.example.backend.dto.ResponseDTO;
 import com.example.backend.dto.cart.CartDTO;
 import com.example.backend.dto.cart.CartItemDTO;
 import com.example.backend.service.cart.impl.CartServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -14,14 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
+@RequiredArgsConstructor
 public class CartController {
 
     private final CartServiceImpl cartService;
-
-    @Autowired
-    public CartController(CartServiceImpl cartService) {
-        this.cartService = cartService;
-    }
 
     @GetMapping
     public ResponseEntity<ResponseDTO<CartDTO>> viewCart(Authentication authentication) {
@@ -30,19 +26,20 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<List<CartItemDTO>> addToCart(Authentication authentication, @RequestBody CartItemDTO cartItemDTO) {
-        List<CartItemDTO> cartItems = cartService.addToCart(authentication, cartItemDTO);
-        return ResponseEntity.ok(cartItems);
+    public ResponseEntity<ResponseDTO<CartDTO>> addToCart(Authentication authentication, @RequestBody CartItemDTO cartItemDTO) {
+        CartDTO cartDTO = cartService.addToCart(authentication, cartItemDTO);
+        return ResponseEntity.ok(new ResponseDTO<>(HttpStatus.OK.value(), cartDTO));
     }
+
     @DeleteMapping("/remove/{menuId}")
     public ResponseEntity<ResponseDTO<Void>> removeFromCart(Authentication authentication, @PathVariable Long menuId) {
         cartService.removeFromCart(authentication, menuId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ResponseDTO<>(HttpStatus.NO_CONTENT.value(), null));
     }
 
     @DeleteMapping("/clear")
     public ResponseEntity<ResponseDTO<Void>> clearCart(Authentication authentication) {
         cartService.clearCart(authentication);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ResponseDTO<>(HttpStatus.NO_CONTENT.value(), null));
     }
 }

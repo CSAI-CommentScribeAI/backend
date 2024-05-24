@@ -1,6 +1,7 @@
 package com.example.backend.dto.menu;
 
 import com.example.backend.entity.menu.Menu;
+import com.example.backend.entity.menu.MenuStatus;
 import com.example.backend.entity.store.Store;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -23,9 +24,7 @@ public class MenuDTO {
     private String imageUrl;
     private int price;
     private String menuDetail;
-    @Builder.Default
-    private boolean visible = true; // 메뉴 보이게할건지 아닌지
-
+    private MenuStatus status;
 
     public static MenuDTO entityToDTO(Menu m){
         return MenuDTO.builder()
@@ -34,8 +33,8 @@ public class MenuDTO {
                 .name(m.getName())
                 .imageUrl(m.getImageUrl())
                 .price(m.getPrice())
+                .status(m.getStatus())
                 .menuDetail(m.getMenuDetail())
-                .visible(true)
                 .build();
     }
 

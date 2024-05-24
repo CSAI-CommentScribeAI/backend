@@ -6,8 +6,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 public abstract class CartService {
     public abstract CartDTO getCartByUserId(Authentication authentication);
@@ -16,7 +14,7 @@ public abstract class CartService {
     public abstract CartDTO viewCart(Authentication authentication);
 
     @Transactional
-    public abstract List<CartItemDTO> addToCart(Authentication authentication, CartItemDTO cartItemDTO);
+    public abstract CartDTO addToCart(Authentication authentication, CartItemDTO cartItemDTO);
     @Transactional
     public abstract void removeFromCart(Authentication authentication, Long menuId);
     @Transactional

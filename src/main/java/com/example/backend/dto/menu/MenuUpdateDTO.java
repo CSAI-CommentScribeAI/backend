@@ -1,5 +1,6 @@
 package com.example.backend.dto.menu;
 
+import com.example.backend.entity.menu.MenuStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +15,5 @@ public class MenuUpdateDTO {
     private String imageUrl;
     private int price;
     private String menuDetail;
+    private MenuStatus status;
 }

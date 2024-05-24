@@ -1,16 +1,18 @@
 package com.example.backend.dto.store;
 
 import com.example.backend.entity.store.Category;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalTime;
+
+@Getter
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoreInsertDTO {
+    @Getter
     private Long id;
     private String name; // 매장명
     private int minOrderPrice; // 최소 주문금액
@@ -24,9 +26,10 @@ public class StoreInsertDTO {
     private String postalCode; // 우편번호
     private Double latitude; // 위도
     private Double longitude; // 경도
-    public Long getId() {
-        return this.id;
-    }
+    @DateTimeFormat(pattern = "HH:mm")
+    private LocalTime openTime;
 
+    @DateTimeFormat(pattern = "HH:mm")
+    private LocalTime closeTime; // 마감 시간
 
 }

@@ -1,33 +1,26 @@
 package com.example.backend.service.menu;
 
-import com.example.backend.dto.ResponseDTO;
 import com.example.backend.dto.menu.MenuDTO;
 import com.example.backend.dto.menu.MenuInsertDTO;
 import com.example.backend.dto.menu.MenuUpdateDTO;
 import com.example.backend.dto.store.StoreDTO;
 import com.example.backend.entity.menu.Menu;
-import com.example.backend.entity.menu.MenuOptionTitle;
 import com.example.backend.entity.store.Store;
 import com.example.backend.entity.userAccount.UserAccount;
-import com.example.backend.entity.userAccount.UserRole;
 import com.example.backend.exception.menu.MenuNotFoundException;
 import com.example.backend.exception.store.StoreNotFoundException;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
-import com.example.backend.repository.menu.MenuConnectRepository;
-import com.example.backend.repository.menu.MenuOptionRepository;
 import com.example.backend.repository.menu.MenuRepository;
 import com.example.backend.repository.store.StoreRepository;
 import com.example.backend.service.aws.AwsS3Service;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,121 +30,80 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final UserAccountRepository userAccountRepository;
     private final StoreRepository storeRepository;
-    private final MenuOptionRepository menuOptionRepository;
-    private final MenuConnectRepository menuConnectRepository;
     private final AwsS3Service s3Service;
-
-    public ResponseDTO<?> selectMenu(Long menuId){
-
-        Map<String, Object> m = new HashMap<>();
-
-        Menu menu = menuRepository.findById(menuId).orElseThrow(MenuNotFoundException::new);
-
-        List<MenuOptionTitle> motList = menuConnectRepository.findByMenu(menu);
-        for(MenuOptionTitle mot : motList) {
-            mot.setMenuOptionList(menuOptionRepository.findAllByMenuOptionTitle(mot));
-        }
-
-        m.put("menu", MenuDTO.entityToDTO(menu));
-        m.put("menuOptionTitle", motList);
-
-        return new ResponseDTO<>(HttpStatus.OK.value(), m);
-    }
 
     @Transactional
     public StoreDTO addMenu(Authentication authentication, MenuInsertDTO menuDTO, MultipartFile multipartFile, Long storeId) {
-        // 사용자의 ID 가져오기
-        String userId = authentication.getName();
-
-        // 사용자 계정을 데이터베이스에서 조회
-        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
-
-        // 사용자의 역할이 ROLE_OWNER가 아니라면 예외 발생
-        if (userAccount.getUserRole() != UserRole.ROLE_OWNER) {
-            throw new IllegalStateException("가게를 등록할 권한이 없습니다.");
+        UserAccount userAccount = getUserAccount(authentication);
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+        if (!store.getUserAccount().getId().equals(userAccount.getId())) {
+            throw new IllegalStateException("메뉴를 추가할 권한이 없습니다.");
         }
-        // 매장 조회
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreNotFoundException());
+        String imageUrl = uploadMenuImage(multipartFile);
+        Menu menu = menuDTO.dtoToEntity();
+        menu.setImageUrl(imageUrl);
+        menu.setStore(store);
+        menuRepository.save(menu);
+        return StoreDTO.entityToDTO(store);
+    }
 
-        // 이미지 업로드 및 확인
+    @Transactional
+    public StoreDTO updateMenu(Authentication authentication, Long storeId, Long menuId, MenuUpdateDTO menuDTO, MultipartFile multipartFile){
+        UserAccount userAccount = getUserAccount(authentication);
+        Store store = validateStoreOwnership(storeId, userAccount);
+        Menu menu = menuRepository.findById(menuId).orElseThrow(MenuNotFoundException::new);
+        updateMenuDetails(menu, menuDTO, multipartFile);
+        return StoreDTO.entityToDTO(store);
+    }
+
+    @Transactional
+    public String deleteMenu(Authentication authentication, Long menuId, Long id){
+        UserAccount userAccount = getUserAccount(authentication);
+        Menu menu = menuRepository.findById(menuId).orElseThrow(MenuNotFoundException::new);
+        if (!menu.getStore().getUserAccount().getId().equals(userAccount.getId())) {
+            throw new IllegalStateException("메뉴 삭제 권한이 없습니다.");
+        }
+        menuRepository.delete(menu);
+        return "메뉴가 삭제되었습니다.";
+    }
+
+    private UserAccount getUserAccount(Authentication authentication) {
+        String userId = authentication.getName();
+        return userAccountRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new IllegalStateException("사용자 계정을 찾을 수 없습니다: " + userId));
+    }
+
+    private Store validateStoreOwnership(Long storeId, UserAccount userAccount) {
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+        if (!store.getUserAccount().getId().equals(userAccount.getId())) {
+            throw new IllegalStateException("해당 가게의 권한이 없습니다.");
+        }
+        return store;
+    }
+
+    private void updateMenuDetails(Menu menu, MenuUpdateDTO menuDTO, MultipartFile multipartFile) {
+        menu.setName(menuDTO.getName());
+        menu.setPrice(menuDTO.getPrice());
+        menu.setMenuDetail(menuDTO.getMenuDetail());
+        menu.setStatus(menuDTO.getStatus()); // MenuStatus 업데이트
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            String imageUrl = uploadMenuImage(multipartFile);
+            menu.setImageUrl(imageUrl);
+        }
+        menuRepository.save(menu);
+    }
+
+    private String uploadMenuImage(MultipartFile multipartFile) {
         if (multipartFile == null || multipartFile.isEmpty()) {
             throw new IllegalArgumentException("이미지 파일이 제공되지 않았습니다.");
         }
-        String imageUrl = s3Service.uploadMenuImage("menu", multipartFile);
-
-        // 메뉴 생성 및 저장
-        Menu menu = menuDTO.dtoToEntity();
-        menu.setImageUrl(imageUrl); // 이미지 경로 설정
-        menu.setStore(store);
-        menuRepository.save(menu);
-
-        return StoreDTO.entityToDTO(store);
+        return s3Service.uploadMenuImage("menu", multipartFile);
     }
 
-
-    @Transactional
-    public StoreDTO updateMenu(Authentication authentication, Long menuId, MenuUpdateDTO menuDTO){
-        // 사용자의 ID 가져오기
-        String userId = authentication.getName();
-
-        // 사용자 계정을 데이터베이스에서 조회
-        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
-
-        // 사용자의 역할이 ROLE_OWNER가 아니라면 예외 발생
-        if (userAccount.getUserRole() != UserRole.ROLE_OWNER) {
-            throw new IllegalStateException("가게를 등록할 권한이 없습니다.");
-        }
-
-        // 매장 조회
-        Store store = storeRepository.findById(Long.valueOf(userId)).orElseThrow(StoreNotFoundException::new);
-
-        // 메뉴 조회
-        Menu menu = menuRepository.findById(menuId).orElseThrow(MenuNotFoundException::new);
-
-        // 메뉴가 해당 매장에 속하는지 확인
-        if(!store.equals(menu.getStore())) {
-            throw new IllegalArgumentException("메뉴가 해당 가게에 속하지 않습니다.");
-        }
-
-        // 메뉴 정보 업데이트
-        menu.setName(menuDTO.getName());
-        menu.setPrice(menuDTO.getPrice());
-        menu.setImageUrl(menuDTO.getImageUrl());
-        menu.setMenuDetail(menuDTO.getMenuDetail());
-
-        return StoreDTO.entityToDTO(store);
-    }
-
-    @Transactional
-    public String deleteMenu(Authentication authentication, Long menuId){
-        // 사용자의 ID 가져오기
-        String userId = authentication.getName();
-
-        // 사용자 계정을 데이터베이스에서 조회
-        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
-
-        // 사용자의 역할이 ROLE_OWNER가 아니라면 예외 발생
-        if (userAccount.getUserRole() != UserRole.ROLE_OWNER) {
-            throw new IllegalStateException("가게를 등록할 권한이 없습니다.");
-        }
-
-        // 메뉴 조회
-        Menu menu = menuRepository.findById(menuId).orElseThrow(MenuNotFoundException::new);
-
-        // 메뉴를 매장에서 삭제
-        menu.getStore().deleteMenu(menu);
-
-        // 메뉴 삭제
-        try {
-            menuRepository.delete(menu);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("메뉴 삭제 중 오류가 발생했습니다.", e);
-        }
-
-        return "메뉴가 삭제되었습니다.";
+    public List<MenuDTO> findMenusByStoreId(Long storeId) {
+        List<Menu> menus = menuRepository.findByStoreId(storeId);
+        return menus.stream()
+                .map(MenuDTO::entityToDTO)
+                .collect(Collectors.toList());
     }
 }

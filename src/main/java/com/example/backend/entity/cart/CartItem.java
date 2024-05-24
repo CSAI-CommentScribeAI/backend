@@ -29,4 +29,12 @@ public class CartItem {
 
     @Column(nullable = false)
     private int quantity;
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
 }

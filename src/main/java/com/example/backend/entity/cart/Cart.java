@@ -1,6 +1,5 @@
 package com.example.backend.entity.cart;
 
-import com.example.backend.entity.menu.Menu;
 import com.example.backend.entity.userAccount.UserAccount;
 import lombok.Data;
 
@@ -40,5 +39,13 @@ public class Cart {
         }
         this.totalPrice = totalPrice;
         this.storeId = storeId;
+    }
+
+    public List<CartItem> getItems() {
+        return cartItems;  // 수정된 부분
+    }
+
+    public void clearItems() {
+        this.cartItems.clear();  // 수정된 부분
     }
 }

@@ -27,8 +27,8 @@ public class Menu extends TimeZone {
     private String imageUrl;
     private int price;
     private String menuDetail;
-    @Builder.Default
-    private boolean visible = true;
+    @Enumerated(EnumType.STRING)
+    private MenuStatus status;
 
     public void setStore(Store store) {
         this.store = store;

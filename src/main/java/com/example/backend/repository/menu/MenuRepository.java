@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,9 +17,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Autowired
     RedisTemplate<String, Menu> redisTemplate = new RedisTemplate<>();
 
-    @Query("select m from Menu m join fetch m.store s where m.id = :id")
-    Optional<Menu> findByMenuIdWithStore(Long id);
-
+    List<Menu> findByStoreId(Long storeId);
     default Optional<Menu> findByMenuId(Long id) {
         // Redis에서 메뉴를 가져오는 로직
         Menu menu = redisTemplate.opsForValue().get(String.valueOf(id));
