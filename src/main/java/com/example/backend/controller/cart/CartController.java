@@ -2,7 +2,7 @@ package com.example.backend.controller.cart;
 
 import com.example.backend.dto.ResponseDTO;
 import com.example.backend.dto.cart.CartDTO;
-import com.example.backend.dto.cart.CartItemDTO;
+import com.example.backend.dto.menu.MenuDTO;
 import com.example.backend.service.cart.impl.CartServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("api/v1/cart")
 @RequiredArgsConstructor
 public class CartController {
 
@@ -23,9 +23,9 @@ public class CartController {
         return ResponseEntity.ok(new ResponseDTO<>(HttpStatus.OK.value(), cartDTO));
     }
 
-    @PostMapping("/add/{menuId}")
-    public ResponseEntity<ResponseDTO<CartDTO>> addToCart(Authentication authentication, @PathVariable Long menuId) {
-        CartDTO cartDTO = cartService.addToCart(authentication, menuId);
+    @PostMapping("/add")
+    public ResponseEntity<ResponseDTO<CartDTO>> addToCart(Authentication authentication, @RequestBody MenuDTO menuDTO) {
+        CartDTO cartDTO = cartService.addToCart(authentication, menuDTO);
         return ResponseEntity.ok(new ResponseDTO<>(HttpStatus.OK.value(), cartDTO));
     }
 
