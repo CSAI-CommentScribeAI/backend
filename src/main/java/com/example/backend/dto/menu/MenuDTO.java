@@ -19,17 +19,17 @@ import java.util.stream.Collectors;
 public class MenuDTO {
     private Long id;
     @JsonIgnore
-    private Store store;
+    private Long storeId;
     private String name;
     private String imageUrl;
     private int price;
     private String menuDetail;
     private MenuStatus status;
 
-    public static MenuDTO entityToDTO(Menu m){
+    public static MenuDTO entityToDTO(Menu m) {
         return MenuDTO.builder()
                 .id(m.getId())
-                .store(m.getStore())
+                .storeId(m.getStore().getId())
                 .name(m.getName())
                 .imageUrl(m.getImageUrl())
                 .price(m.getPrice())
@@ -37,7 +37,6 @@ public class MenuDTO {
                 .menuDetail(m.getMenuDetail())
                 .build();
     }
-
     public static List<MenuDTO> entityToDTO(List<Menu> menus){
         return menus
                 .stream()
