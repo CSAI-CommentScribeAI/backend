@@ -31,12 +31,12 @@ public class OrderImplService implements OrderService {
 
     @Transactional
     public OrderDTO createOrderFromCart(Authentication authentication, OrderDTO orderDTO) {
-        // 사용자 계정 가져오기
-        Optional<UserAccount> userAccountOpt = userAccountRepository.findByUserId(authentication.getName());
-        if (!userAccountOpt.isPresent()) {
-            throw new UsernameNotFoundException("User not found with userId: " + authentication.getName());
-        }
-        UserAccount userAccount = userAccountOpt.get();
+        String userId = authentication.getName();
+
+        // 사용자 계정을 데이터베이스에서 조회합니다.
+        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
+
 
         // Order 엔티티 생성 및 설정
         Order order = new Order();
@@ -44,7 +44,7 @@ public class OrderImplService implements OrderService {
         order.setStoreId(orderDTO.getStoreId());
         order.setTotalPrice(orderDTO.getTotalPrice());
         order.setUserAccount(userAccount);
-        order.setUserAddress(order.getUserAddress());
+        order.setUserAddress(orderDTO.getUserAddress());
 
         // OrderMenu 엔티티 리스트 생성 및 설정
         List<OrderMenu> orderMenus = orderDTO.getOrderMenus().stream()

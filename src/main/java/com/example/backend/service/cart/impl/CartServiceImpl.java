@@ -74,6 +74,7 @@ public class CartServiceImpl extends CartService {
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
                     newCart.setUser(user);
+                    newCart.setStoreId(menuDTO.getStoreId());
                     cartRepository.save(newCart);
                     return newCart;
                 });

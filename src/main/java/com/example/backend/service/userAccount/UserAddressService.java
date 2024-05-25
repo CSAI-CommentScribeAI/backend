@@ -45,8 +45,9 @@ public class UserAddressService {
                 .latitude(userAddressDto.getLatitude())
                 .longitude(userAddressDto.getLongitude())
                 .build();
+        UserAddress userAddressSave = userAddressRepository.save(userAddress);
 
-        return userAddressRepository.save(userAddress).getId();
+        return userAddressSave.getId();
     }
 
     @Transactional
