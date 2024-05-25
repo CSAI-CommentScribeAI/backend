@@ -27,7 +27,7 @@ public class UserAddressService {
     }
 
     @Transactional
-    public Long createUserAddress(UserAddressDto userAddressDto, Authentication authentication) {
+    public int createUserAddress(UserAddressDto userAddressDto, Authentication authentication) {
         if (authentication == null) {
             throw new RuntimeException("Authentication information is not available.");
         }
@@ -45,8 +45,9 @@ public class UserAddressService {
                 .latitude(userAddressDto.getLatitude())
                 .longitude(userAddressDto.getLongitude())
                 .build();
+        UserAddress userAddressSave = userAddressRepository.save(userAddress);
 
-        return userAddressRepository.save(userAddress).getId();
+        return Math.toIntExact(userAddressSave.getId());
     }
 
     @Transactional
@@ -65,7 +66,7 @@ public class UserAddressService {
     }
 
     @Transactional
-    public UserAccountResponseDto updateMainAddress(Long id, Authentication authentication){
+    public UserAccountResponseDto updateMainAddress(int addressId, Authentication authentication){
         if (authentication == null) {
             throw new RuntimeException("Authentication information is not available.");
         }
@@ -75,10 +76,7 @@ public class UserAddressService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
 
         // 새로운 주소를 찾아서 주요 주소로 설정합니다.
-        UserAddress userAddress = userAddressRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("UserAddress not found"));
-
-        userAccount.getUserAddresses();
+        userAccount.setAddress(addressId);
 
         return UserAccountResponseDto.of(userAccountRepository.save(userAccount));
     }

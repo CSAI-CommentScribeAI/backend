@@ -1,109 +1,115 @@
 package com.example.backend.service.order;
 
 import com.example.backend.dto.order.OrderDTO;
+import com.example.backend.dto.order.OrderMenuDTO;
 import com.example.backend.entity.menu.Menu;
-import com.example.backend.entity.order.OrderStatus;
-import com.example.backend.entity.cart.Cart;
-import com.example.backend.entity.cart.CartItem;
 import com.example.backend.entity.order.Order;
 import com.example.backend.entity.order.OrderMenu;
-import com.example.backend.entity.store.Store;
-import com.example.backend.entity.userAccount.UserAddress;
-import com.example.backend.repository.UserAccount.UserAddressRepository;
+import com.example.backend.entity.order.OrderStatus;
+import com.example.backend.entity.userAccount.UserAccount;
+import com.example.backend.repository.UserAccount.UserAccountRepository;
 import com.example.backend.repository.cart.CartRepository;
+import com.example.backend.repository.menu.MenuRepository;
 import com.example.backend.repository.order.OrderRepository;
-import com.example.backend.repository.store.StoreRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class OrderImplService implements OrderService {
 
-    private final CartRepository cartRepository;
-    private final UserAddressRepository userAddressRepository;
+    private final UserAccountRepository userAccountRepository;
     private final OrderRepository orderRepository;
-    private final StoreRepository storeRepository;
-    @Autowired
-    public OrderImplService(CartRepository cartRepository,
-                            UserAddressRepository userAddressRepository,
-                            OrderRepository orderRepository,
-                            StoreRepository storeRepository) {
-        this.cartRepository = cartRepository;
-        this.userAddressRepository = userAddressRepository;
-        this.orderRepository = orderRepository;
-        this.storeRepository = storeRepository;
-    }
+    private final MenuRepository menuRepository;
+    private final CartRepository cartRepository;
 
-    @Override
     @Transactional
-    public OrderDTO createOrderFromCart(Authentication authentication, Long userAddressId) {
+    public OrderDTO createOrderFromCart(Authentication authentication, OrderDTO orderDTO) {
         String userId = authentication.getName();
-        // 사용자의 주소 정보를 가져옴
-        UserAddress userAddress = userAddressRepository.findById(userAddressId).orElse(null);
-        if (userAddress == null) {
-            // 사용자 주소 정보가 없으면 예외 처리 또는 적절한 방법으로 처리
-            return null;
-        }
 
-        Cart cart = cartRepository.findByUserId(Long.valueOf(userId));
-        if (cart == null || cart.getCartItems().isEmpty()) {
-            throw new IllegalStateException("장바구니가 비어 있습니다.");
-        }
+        // 사용자 계정을 데이터베이스에서 조회합니다.
+        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
 
-        Store store = storeRepository.findById(cart.getStoreId())
-                .orElseThrow(() -> new IllegalStateException("상점 정보를 찾을 수 없습니다."));
 
-        // 주문 생성
+        // Order 엔티티 생성 및 설정
         Order order = new Order();
-        order.setOrderStatus(OrderStatus.ACCEPT); // 주문 상태 설정
-        order.setStore(cart.getStoreId()); // 상점 설정
-        order.setTotalPrice(cart.getTotalPrice()); // 총 가격 설정
-        order.setUserAccount(cart.getUser()); // 주문한 사용자 설정
-        order.setUserAddress(userAddress); // 사용자의 배송 주소 설정
+        order.setOrderStatus(OrderStatus.REQUEST);
+        order.setStoreId(orderDTO.getStoreId());
+        order.setTotalPrice(orderDTO.getTotalPrice());
+        order.setUserAccount(userAccount);
+        order.setUserAddress(orderDTO.getUserAddress());
 
-        // 주문 메뉴 생성
-        List<OrderMenu> orderMenus = new ArrayList<>();
-        for (CartItem cartItem : cart.getCartItems()) {
-            OrderMenu orderMenu = new OrderMenu();
-            orderMenu.setOrder(order); // 주문 정보 설정
-            Menu menu = cartItem.getMenu(); // 메뉴 정보 가져오기
-            orderMenu.setMenu(menu); // 메뉴 정보 설정
-            orderMenu.setImageUrl(menu.getImageUrl()); // 메뉴의 이미지 URL 설정
-            orderMenu.setQuantity(cartItem.getQuantity()); // 수량 설정
+        // OrderMenu 엔티티 리스트 생성 및 설정
+        List<OrderMenu> orderMenus = orderDTO.getOrderMenus().stream()
+                .map(orderMenuDTO -> toOrderMenuEntity(orderMenuDTO, order))
+                .collect(Collectors.toList());
 
-            orderMenus.add(orderMenu);
-        }
-        order.setOrderMenus(orderMenus); // 주문 메뉴 설정
+        // Order와 OrderMenu 간의 연관 설정
+        order.setOrderMenus(orderMenus);
 
-        // 주문 저장
+        // Order 저장 (OrderMenus는 CascadeType.ALL로 설정되어 있어 함께 저장됨)
         Order savedOrder = orderRepository.save(order);
 
-        // 장바구니와 장바구니 아이템 삭제
-        cartRepository.delete(cart);  // 장바구니 삭제
+        cartRepository.deleteByUserId(userAccount.getId());
 
-        // 주문을 DTO로 변환하여 반환
-        return OrderDTO.mapFromOrder(savedOrder);
+        // OrderDTO 반환
+        return toOrderDTO(savedOrder);
     }
 
     @Override
-    public void placeOrder(Long orderId) {
-        // 주문 정보 가져오기
-        Order order = orderRepository.findById(orderId).orElse(null);
-        if (order == null) {
-            // 주문이 없는 경우 예외 처리 또는 적절한 방법으로 처리
-            throw new IllegalArgumentException("주문을 찾을 수 없습니다.");
+    public void placeOrder(Long orderId, boolean approve) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with orderId: " + orderId));
+
+        if(approve) {
+            order.setOrderStatus(OrderStatus.ACCEPT);
+        } else {
+            order.setOrderStatus(OrderStatus.CANCEL);
         }
 
-        // 주문 상태 변경 (예: WAITING -> ACCEPT)
-        order.setOrderStatus(OrderStatus.ACCEPT);
-
-        // 주문 정보 저장
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        if (savedOrder == null) {
+            throw new RuntimeException("Error placing order.");
+        }
     }
 
+    private OrderMenu toOrderMenuEntity(OrderMenuDTO orderMenuDTO, Order order) {
+        Menu menu = menuRepository.findById(orderMenuDTO.getMenuId())
+                .orElseThrow(() -> new RuntimeException("Menu not found with menuId: " + orderMenuDTO.getMenuId()));
+
+        return OrderMenu.builder()
+                .order(order)
+                .menu(menu)
+                .menuName(menu.getName())
+                .imageUrl(orderMenuDTO.getImageUrl())
+                .quantity(orderMenuDTO.getQuantity())
+                .build();
+    }
+
+    private OrderDTO toOrderDTO(Order order) {
+        return OrderDTO.builder()
+                .orderStatus(order.getOrderStatus())
+                .storeId(order.getStoreId())
+                .totalPrice(order.getTotalPrice())
+                .userId(order.getUserAccount().getId())
+                .orderMenus(order.getOrderMenus().stream()
+                        .map(this::toOrderMenuDTO)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    private OrderMenuDTO toOrderMenuDTO(OrderMenu orderMenu) {
+        return OrderMenuDTO.builder()
+                .menuId(orderMenu.getMenu().getId())
+                .imageUrl(orderMenu.getImageUrl())
+                .quantity(orderMenu.getQuantity())
+                .build();
+    }
 }

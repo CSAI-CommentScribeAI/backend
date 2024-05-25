@@ -27,6 +27,4 @@ public class CartItem {
 
     private String imageUrl;
 
-    @Column(nullable = false)
-    private int quantity;
 }

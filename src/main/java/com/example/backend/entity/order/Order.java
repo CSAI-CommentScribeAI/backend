@@ -36,31 +36,8 @@ public class Order extends TimeZone {
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_address_id")
-    private UserAddress userAddress;
+    private String userAddress;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<OrderMenu> orderMenus;
-
-    public UserAccount getUserAccount() {
-        return userAccount;
-    }
-
-    public int getTotalAmount() {
-        return totalPrice;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalPrice = totalPrice;
-    }
-
-
-    public void setUserAddress(UserAddress userAddress) {
-        this.userAddress = userAddress;
-    }
-
-    public void setStore(Long storeId) {
-        this.storeId = storeId;
-    }
 }

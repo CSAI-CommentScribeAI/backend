@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,12 @@ public class Store extends TimeZone {
     @Column(name = "recent_order_id")
     private Long recentlyOrderId;
 
+    @Column(name = "open_time")
+    private LocalTime openTime;
+
+    @Column(name = "close_time")
+    private LocalTime closeTime;
+
     public int getBusinessLicense() {
         return this.businessLicense;
     }
@@ -95,22 +102,6 @@ public class Store extends TimeZone {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-    public void setDistance(String d) {
-        if (!d.endsWith("km")) {
-            throw new StoreDistanceException();
-        }
-        try {
-            // "km"을 제외한 나머지 부분을 숫자로 변환
-            double distanceValue = Double.parseDouble(d.substring(0, d.length() - 2).trim());
-            if (storeAddress != null) {
-                storeAddress.setDistance(distanceValue);
-            } else {
-                throw new IllegalStateException("이 매장에 연결된 주소 정보가 없습니다.");
-            }
-        } catch (NumberFormatException e) {
-            throw new StoreDistanceException();
         }
     }
 

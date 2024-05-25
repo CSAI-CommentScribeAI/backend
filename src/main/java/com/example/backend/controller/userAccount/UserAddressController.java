@@ -20,7 +20,7 @@ public class UserAddressController {
 
     @PostMapping
     public ResponseEntity<?> createUserAddress(@RequestBody UserAddressDto userAddressDto, Authentication authentication) {
-        Long userAddressId = userAddressService.createUserAddress(userAddressDto, authentication);
+        int userAddressId = userAddressService.createUserAddress(userAddressDto, authentication);
         UserAccountResponseDto updated = userAddressService.updateMainAddress(userAddressId, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).body(updated); // 새로운 주소가 생성되었음을 나타내는 상태 코드 201과 함께 생성된 주소 정보를 반환
     }
@@ -33,7 +33,7 @@ public class UserAddressController {
 
     @PutMapping("/main-address-change/{id}")
     public ResponseEntity<UserAccountResponseDto> updateMainAddress(@PathVariable Long id, Authentication authentication) {
-        UserAccountResponseDto updated = userAddressService.updateMainAddress(id, authentication);
+        UserAccountResponseDto updated = userAddressService.updateMainAddress(Math.toIntExact(id), authentication);
         return ResponseEntity.ok(updated); // 주소가 업데이트되었음을 나타내는 상태 코드 200과 함께 업데이트된 주소 정보를 반환
     }
 
