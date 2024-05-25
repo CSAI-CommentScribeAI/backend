@@ -6,6 +6,7 @@ import com.example.backend.dto.menu.MenuDTO;
 import com.example.backend.entity.cart.Cart;
 import com.example.backend.entity.cart.CartItem;
 import com.example.backend.entity.menu.Menu;
+import com.example.backend.entity.store.Store;
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.entity.userAccount.UserAddress;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
@@ -20,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -78,7 +78,7 @@ public class CartServiceImpl extends CartService {
                     return newCart;
                 });
 
-        if (cart.getStoreId() == null || cart.getStoreId().equals(menuDTO.getStore().getId())) {
+        if (cart.getStoreId() == null || cart.getStoreId().equals(menuDTO.getStoreId())) { // 수정된 부분
             CartItem existingItem = findExistingItem(cart, menuDTO.getId());
             if (existingItem == null) {
                 addNewItem(cart, menuDTO);
@@ -100,7 +100,7 @@ public class CartServiceImpl extends CartService {
 
     private void addNewItem(Cart cart, MenuDTO menuDTO) {
         if (cart.getStoreId() == null) {
-            cart.setStoreId(menuDTO.getStore().getId());
+            cart.setStoreId(menuDTO.getStoreId()); // 수정된 부분
         }
         CartItem newCartItem = new CartItem();
         newCartItem.setMenu(Menu.builder()
@@ -109,7 +109,7 @@ public class CartServiceImpl extends CartService {
                 .imageUrl(menuDTO.getImageUrl())
                 .price(menuDTO.getPrice())
                 .menuDetail(menuDTO.getMenuDetail())
-                .store(menuDTO.getStore())
+                .store(Store.builder().id(menuDTO.getStoreId()).build()) // store 설정
                 .status(menuDTO.getStatus())
                 .build());
         newCartItem.setImageUrl(menuDTO.getImageUrl());
