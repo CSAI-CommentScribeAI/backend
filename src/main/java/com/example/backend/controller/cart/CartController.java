@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
@@ -25,9 +23,9 @@ public class CartController {
         return ResponseEntity.ok(new ResponseDTO<>(HttpStatus.OK.value(), cartDTO));
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<ResponseDTO<CartDTO>> addToCart(Authentication authentication, @RequestBody CartItemDTO cartItemDTO) {
-        CartDTO cartDTO = cartService.addToCart(authentication, cartItemDTO);
+    @PostMapping("/add/{menuId}")
+    public ResponseEntity<ResponseDTO<CartDTO>> addToCart(Authentication authentication, @PathVariable Long menuId) {
+        CartDTO cartDTO = cartService.addToCart(authentication, menuId);
         return ResponseEntity.ok(new ResponseDTO<>(HttpStatus.OK.value(), cartDTO));
     }
 

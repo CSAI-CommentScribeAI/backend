@@ -51,15 +51,12 @@ public class CartServiceImpl extends CartService {
             itemDTO.setMenuId(item.getMenu().getId());
             itemDTO.setMenuName(item.getMenu().getName());
             itemDTO.setImageUrl(item.getImageUrl());
-            itemDTO.setQuantity(item.getQuantity());
             itemDTO.setPrice(item.getMenu().getPrice());
             cartItems.add(itemDTO);
         });
 
         CartDTO cartDTO = new CartDTO();
         cartDTO.setUserId(cart.getUser().getId());
-        cartDTO.setCartStatus(cart.getCartStatus());
-        cartDTO.setTotalPrice(cart.getTotalPrice());
         cartDTO.setCartItems(cartItems);
 
         UserAddress userAddress = userAddressRepository.findById(userAccount.getId())
@@ -117,7 +114,6 @@ public class CartServiceImpl extends CartService {
         CartItem newCartItem = new CartItem();
         newCartItem.setMenu(menu);
         newCartItem.setImageUrl(menu.getImageUrl());
-        newCartItem.setQuantity(cartItemDTO.getQuantity());
         cart.getCartItems().add(newCartItem);
     }
 

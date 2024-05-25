@@ -27,14 +27,4 @@ public class CartItem {
 
     private String imageUrl;
 
-    @Column(nullable = false)
-    private int quantity;
-    public Menu getMenu() {
-        return menu;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
 }
