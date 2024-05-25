@@ -21,7 +21,6 @@ public class UserAddressController {
     @PostMapping
     public ResponseEntity<?> createUserAddress(@RequestBody UserAddressDto userAddressDto, Authentication authentication) {
         int userAddressId = userAddressService.createUserAddress(userAddressDto, authentication);
-        System.out.println("userAddressId = " + userAddressId);
         UserAccountResponseDto updated = userAddressService.updateMainAddress(userAddressId, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).body(updated); // 새로운 주소가 생성되었음을 나타내는 상태 코드 201과 함께 생성된 주소 정보를 반환
     }
