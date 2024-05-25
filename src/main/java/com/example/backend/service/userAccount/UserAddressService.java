@@ -1,6 +1,7 @@
 package com.example.backend.service.userAccount;
 
 import com.example.backend.dto.userAccount.UserAccountResponseDTO;
+
 import com.example.backend.dto.userAccount.UserAddressDTO;
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.entity.userAccount.UserAddress;
@@ -27,7 +28,7 @@ public class UserAddressService {
     }
 
     @Transactional
-    public int createUserAddress(UserAddressDto userAddressDto, Authentication authentication) {
+    public int createUserAddress(UserAddressDTO userAddressDto, Authentication authentication) {
         if (authentication == null) {
             throw new RuntimeException("Authentication information is not available.");
         }
@@ -69,7 +70,7 @@ public class UserAddressService {
     }
 
     @Transactional
-    public UserAccountResponseDto updateMainAddress(int addressId, Authentication authentication){
+    public UserAccountResponseDTO updateMainAddress(int addressId, Authentication authentication){
         if (authentication == null) {
             throw new RuntimeException("Authentication information is not available.");
         }
