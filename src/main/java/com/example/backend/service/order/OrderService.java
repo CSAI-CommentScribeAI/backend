@@ -6,8 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 public interface OrderService {
-    OrderDTO createOrderFromCart(Authentication authentication, Long userAddressId);
+    OrderDTO createOrderFromCart(Authentication authentication, OrderDTO orderDTO);
 
     @Transactional
     void placeOrder(Long orderId);
+
 }
