@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,13 +17,14 @@ public class OrderMenu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Better specify strategy for clarity
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id", nullable = false) // Assuming an order must exist
     private Order order;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id", nullable = false) // Assuming a menu must exist
     private Menu menu;
 
+    private String menuName;
     private String imageUrl;
     @Column(nullable = false)
     private int quantity;

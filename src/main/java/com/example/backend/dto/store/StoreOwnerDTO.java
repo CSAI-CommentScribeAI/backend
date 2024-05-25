@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoreDTO {
+public class StoreOwnerDTO {
     @JsonIgnore // ID 필드를 JSON 응답에서 숨깁니다.
     private Long id;
     private String name; // 매장명
@@ -27,6 +27,7 @@ public class StoreDTO {
     private Category category;
     private String info;
     private StoreAddressDTO storeAddress; // 거리 정보
+    private String businessLicense; // 사업자 등록증
     @JsonIgnore // UserAccount의 ID 필드를 JSON 응답에서 숨깁니다.
     private Long userId;
     private LocalTime openTime; // 오픈 시간
@@ -35,14 +36,15 @@ public class StoreDTO {
     @Builder.Default
     private List<MenuDTO> menus = new ArrayList<>();
 
-    public static StoreDTO entityToDTO(Store s) {
-        return StoreDTO.builder()
+    public static StoreOwnerDTO entityToDTO(Store s) {
+        return StoreOwnerDTO.builder()
                 .id(s.getId())
                 .name(s.getName())
                 .minOrderPrice(s.getMinOrderPrice())
                 .category(s.getCategory())
                 .info(s.getInfo())
                 .storeAddress(StoreAddressDTO.entityToDTO(s.getStoreAddress()))
+                .businessLicense(String.valueOf(s.getBusinessLicense()))
                 .userId(s.getUserAccount().getId())
                 .storeImageUrl(s.getStoreImageUrl())
                 .openTime(s.getOpenTime())

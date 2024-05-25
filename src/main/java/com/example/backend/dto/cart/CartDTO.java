@@ -9,10 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartDTO {
-    private Long cartId;
     private Long userId;
-    private String cartStatus;
-    private int totalPrice;
-    private Long storeId;
     private List<CartItemDTO> cartItems;
+    private String userAddress;
 }

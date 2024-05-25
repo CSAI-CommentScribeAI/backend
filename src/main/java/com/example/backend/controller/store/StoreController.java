@@ -1,10 +1,7 @@
 package com.example.backend.controller.store;
 
 import com.example.backend.dto.ResponseDTO;
-import com.example.backend.dto.store.CategoryDTO;
-import com.example.backend.dto.store.StoreDTO;
-import com.example.backend.dto.store.StoreInsertDTO;
-import com.example.backend.dto.store.StoreSearchReqeustDTO;
+import com.example.backend.dto.store.*;
 import com.example.backend.entity.store.Category;
 import com.example.backend.exception.store.StoreNotFoundException;
 import com.example.backend.service.store.StoreService;
@@ -18,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +60,7 @@ public class StoreController {
         return new ResponseDTO<>(HttpStatus.OK.value(), storeService.selectAll(pageable));
     }
 
-    @ApiOperation(value = "카테고리별 가게 조회", notes = "")
+    @ApiOperation(value = "카테고리별 가게 조회")
     @PostMapping("/category")
     public ResponseDTO<?> selectCategory(@RequestBody CategoryDTO categoryDTO){
         return new ResponseDTO<>(HttpStatus.OK.value(),
@@ -70,10 +68,11 @@ public class StoreController {
     }
 
     @ApiOperation(value = "가게정보 수정", notes = "id, name, minOrderPrice, backgroundImageUrl, category, infor을 받는다.")
-    @PutMapping("/")
+    @PutMapping("/{storeId}")
     public ResponseDTO<?> update(Authentication authentication,
+                                 @PathVariable Long storeId,
                                  @RequestBody StoreInsertDTO storeDTO){
-        return new ResponseDTO<>(HttpStatus.OK.value(), storeService.update(authentication, storeDTO.getId(), storeDTO));
+        return new ResponseDTO<>(HttpStatus.OK.value(), storeService.update(authentication, storeId, storeDTO));
     }
 
     @ApiOperation(value = "가게정보 삭제", notes = "storeId를 받아서 가게정보를 삭제한다.")
@@ -83,7 +82,7 @@ public class StoreController {
         return new ResponseDTO<>(HttpStatus.OK.value(), "가게가 삭제되었습니다.");
     }
 
-    @ApiOperation(value = "카테고리 가져오기", notes = "")
+    @ApiOperation(value = "카테고리 가져오기")
     @GetMapping("/category")
     public ResponseDTO<?> selectCategory(){
         List<CategoryDTO> categoryDTOS = new ArrayList<>();
@@ -97,10 +96,19 @@ public class StoreController {
         return new ResponseDTO<>(HttpStatus.OK.value(), categoryDTOS);
     }
 
-    @ApiOperation(value = "Store 검색기능", notes = "")
+    @ApiOperation(value = "Store 검색기능")
     @PostMapping("/search")
     public ResponseDTO<?> search(@RequestBody StoreSearchReqeustDTO ssrDTO){
         return new ResponseDTO<>(HttpStatus.OK.value(),
                 storeService.search(ssrDTO));
     }
+    @GetMapping("/my")
+    public List<StoreOwnerDTO> getMyStores(Authentication authentication) {
+        if (authentication == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증이 필요합니다.");
+        }
+        return storeService.findStoresByOwner(authentication);
+    }
+
+
 }
