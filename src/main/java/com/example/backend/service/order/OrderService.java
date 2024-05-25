@@ -9,6 +9,6 @@ public interface OrderService {
     OrderDTO createOrderFromCart(Authentication authentication, OrderDTO orderDTO);
 
     @Transactional
-    void placeOrder(Long orderId);
+    void placeOrder(Long orderId, boolean approve);
 
 }

@@ -9,9 +9,11 @@ import org.springframework.data.domain.jaxb.SpringDataJaxb.OrderDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,11 +37,11 @@ public class OrderController {
     }
 
 
-    @PostMapping("/place")
-    public ResponseEntity<Void> placeOrder(@RequestBody Long orderId) {
+    @PostMapping("/place/{orderId}")
+    public ResponseEntity<Void> placeOrder(@PathVariable Long orderId, @RequestParam boolean approve) {
         try {
             // 주문 서비스를 호출하여 주문 확정
-            orderService.placeOrder(orderId);
+            orderService.placeOrder(orderId, approve);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

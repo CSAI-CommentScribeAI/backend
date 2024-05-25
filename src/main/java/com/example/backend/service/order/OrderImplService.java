@@ -64,11 +64,16 @@ public class OrderImplService implements OrderService {
     }
 
     @Override
-    public void placeOrder(Long orderId) {
+    public void placeOrder(Long orderId, boolean approve) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found with orderId: " + orderId));
 
-        order.setOrderStatus(OrderStatus.ACCEPT);
+        if(approve) {
+            order.setOrderStatus(OrderStatus.ACCEPT);
+        } else {
+            order.setOrderStatus(OrderStatus.CANCEL);
+        }
+
         Order savedOrder = orderRepository.save(order);
         if (savedOrder == null) {
             throw new RuntimeException("Error placing order.");
