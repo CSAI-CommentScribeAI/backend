@@ -3,9 +3,8 @@ package com.example.backend.service.auth;
 
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.jwt.TokenStore;
-import com.example.backend.jwt.dto.TokenDto;
-import com.example.backend.dto.userAccount.UserAccountRequestDto;
-import com.example.backend.dto.userAccount.UserAccountResponseDto;
+import com.example.backend.dto.userAccount.UserAccountRequestDTO;
+import com.example.backend.dto.userAccount.UserAccountResponseDTO;
 import com.example.backend.jwt.TokenProvider;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,7 @@ public class AuthService {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;  // 30분
 
 
-    public UserAccountResponseDto signup(UserAccountRequestDto requestDto) {
+    public UserAccountResponseDTO signup(UserAccountRequestDTO requestDto) {
         if (userAccountRepository.existsByUserId(requestDto.getUserId())) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다");
         }
@@ -40,10 +39,10 @@ public class AuthService {
         UserAccount userAccount = requestDto.toUserAccount(passwordEncoder);
         userAccount.setCreatedBy(requestDto.getUserId());
         userAccount.setModifiedBy(requestDto.getUserId());
-        return UserAccountResponseDto.of(userAccountRepository.save(userAccount));
+        return UserAccountResponseDTO.of(userAccountRepository.save(userAccount));
     }
 
-    public TokenDto login(UserAccountRequestDto requestDto) {
+    public com.example.backend.jwt.dto.TokenDTO login(UserAccountRequestDTO requestDto) {
         UsernamePasswordAuthenticationToken authenticationToken = requestDto.toAuthentication();
 
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
@@ -52,7 +51,7 @@ public class AuthService {
     }
 
     // AuthService의 refresh 메소드를 새로운 generateAccessToken 메소드를 사용하도록 수정
-    public TokenDto refresh(String refreshToken) {
+    public com.example.backend.jwt.dto.TokenDTO refresh(String refreshToken) {
         // 리프레시 토큰 유효성 검사
         if (!tokenProvider.validateToken(refreshToken)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
@@ -70,7 +69,7 @@ public class AuthService {
             long refreshTokenExpiryTime = tokenProvider.getRemainingTime(refreshToken);
 
             // 새로운 액세스 토큰과 원래의 리프레시 토큰 반환
-            return TokenDto.builder()
+            return com.example.backend.jwt.dto.TokenDTO.builder()
                     .grantType(BEARER_TYPE)
                     .accessToken(newAccessToken)
                     .tokenExpiresIn(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME)

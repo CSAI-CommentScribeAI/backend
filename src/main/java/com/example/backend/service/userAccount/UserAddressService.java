@@ -1,7 +1,7 @@
 package com.example.backend.service.userAccount;
 
-import com.example.backend.dto.userAccount.UserAccountResponseDto;
-import com.example.backend.dto.userAccount.UserAddressDto;
+import com.example.backend.dto.userAccount.UserAccountResponseDTO;
+import com.example.backend.dto.userAccount.UserAddressDTO;
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.entity.userAccount.UserAddress;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
@@ -42,6 +42,7 @@ public class UserAddressService {
                 .roadAddress(userAddressDto.getRoadAddress())
                 .jibunAddress(userAddressDto.getJibunAddress())
                 .postalCode(userAddressDto.getPostalCode())
+                .detailAddress(userAddressDto.getDetailAddress())
                 .latitude(userAddressDto.getLatitude())
                 .longitude(userAddressDto.getLongitude())
                 .build();
@@ -51,7 +52,7 @@ public class UserAddressService {
     }
 
     @Transactional
-    public UserAddressDto updateUserAddress(Long id, UserAddressDto userAddressDto) {
+    public UserAddressDTO updateUserAddress(Long id, UserAddressDTO userAddressDto) {
         UserAddress userAddress = userAddressRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("UserAddress not found"));
         // Update the entity fields
@@ -59,8 +60,10 @@ public class UserAddressService {
         userAddress.setRoadAddress(userAddressDto.getRoadAddress());
         userAddress.setJibunAddress(userAddressDto.getJibunAddress());
         userAddress.setPostalCode(userAddressDto.getPostalCode());
+        userAddress.setDetailAddress(userAddressDto.getDetailAddress());
         userAddress.setLatitude(userAddressDto.getLatitude());
         userAddress.setLongitude(userAddressDto.getLongitude());
+
         userAddressRepository.save(userAddress);
         return userAddressDto;
     }
@@ -78,7 +81,7 @@ public class UserAddressService {
         // 새로운 주소를 찾아서 주요 주소로 설정합니다.
         userAccount.setAddress(addressId);
 
-        return UserAccountResponseDto.of(userAccountRepository.save(userAccount));
+        return UserAccountResponseDTO.of(userAccountRepository.save(userAccount));
     }
 
     @Transactional
@@ -88,7 +91,7 @@ public class UserAddressService {
         userAddressRepository.delete(userAddress);
     }
 
-    public List<UserAddressDto> getAllUserAddresses(Authentication authentication) {
+    public List<UserAddressDTO> getAllUserAddresses(Authentication authentication) {
         if (authentication == null) {
             throw new RuntimeException("Authentication information is not available.");
         }
@@ -99,27 +102,29 @@ public class UserAddressService {
 
         return userAddressRepository.findByUserAccountId(userAccount.getId()).stream()
                 .map(address -> {
-                    UserAddressDto dto = new UserAddressDto();
+                    UserAddressDTO dto = new UserAddressDTO();
                     // Mapping Entity to DTO
                     dto.setFullAddress(address.getFullAddress());
                     dto.setRoadAddress(address.getRoadAddress());
                     dto.setJibunAddress(address.getJibunAddress());
                     dto.setPostalCode(address.getPostalCode());
+                    dto.setDetailAddress(address.getDetailAddress());
                     dto.setLatitude(address.getLatitude());
                     dto.setLongitude(address.getLongitude());
                     return dto;
                 }).collect(Collectors.toList());
     }
 
-    public UserAddressDto getUserAddress(Long id) {
+    public UserAddressDTO getUserAddress(Long id) {
         UserAddress userAddress = userAddressRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("UserAddress not found"));
-        UserAddressDto dto = new UserAddressDto();
+        UserAddressDTO dto = new UserAddressDTO();
         // Mapping Entity to DTO
         dto.setFullAddress(userAddress.getFullAddress());
         dto.setRoadAddress(userAddress.getRoadAddress());
         dto.setJibunAddress(userAddress.getJibunAddress());
         dto.setPostalCode(userAddress.getPostalCode());
+        dto.setDetailAddress(userAddress.getDetailAddress());
         dto.setLatitude(userAddress.getLatitude());
         dto.setLongitude(userAddress.getLongitude());
         return dto;

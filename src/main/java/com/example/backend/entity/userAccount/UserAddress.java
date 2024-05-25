@@ -30,6 +30,8 @@ public class UserAddress {
     @Column(nullable = false)
     private String postalCode; // 우편번호
 
+    private String detailAddress; // 상세 주소
+
     private Double latitude; // 위도
 
     private Double longitude; // 경도

@@ -1,8 +1,7 @@
 package com.example.backend.controller.auth;
 
-import com.example.backend.dto.userAccount.UserAccountRequestDto;
-import com.example.backend.dto.userAccount.UserAccountResponseDto;
-import com.example.backend.jwt.dto.TokenDto;
+import com.example.backend.dto.userAccount.UserAccountRequestDTO;
+import com.example.backend.dto.userAccount.UserAccountResponseDTO;
 import com.example.backend.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,18 +20,18 @@ public class AuthController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<UserAccountResponseDto> signup(@RequestBody UserAccountRequestDto requestDto) {
+    public ResponseEntity<UserAccountResponseDTO> signup(@RequestBody UserAccountRequestDTO requestDto) {
         return ResponseEntity.ok(authService.signup(requestDto));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody UserAccountRequestDto requestDto) {
+    public ResponseEntity<com.example.backend.jwt.dto.TokenDTO> login(@RequestBody UserAccountRequestDTO requestDto) {
         return ResponseEntity.ok(authService.login(requestDto));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenDto> refresh(@RequestBody TokenDto tokenDto) {
-        TokenDto newTokenDto = authService.refresh(tokenDto.getRefreshToken());
+    public ResponseEntity<com.example.backend.jwt.dto.TokenDTO> refresh(@RequestBody com.example.backend.jwt.dto.TokenDTO tokenDto) {
+        com.example.backend.jwt.dto.TokenDTO newTokenDto = authService.refresh(tokenDto.getRefreshToken());
         if (newTokenDto != null) {
             return ResponseEntity.ok(newTokenDto);
         } else {
@@ -41,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody TokenDto tokenDto) {
+    public ResponseEntity<?> logout(@RequestBody com.example.backend.jwt.dto.TokenDTO tokenDto) {
         authService.logout(tokenDto.getRefreshToken());
         return ResponseEntity.ok().build();  // 성공적인 로그아웃 처리 응답
     }

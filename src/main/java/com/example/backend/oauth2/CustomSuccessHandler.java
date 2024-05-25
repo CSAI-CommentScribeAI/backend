@@ -1,16 +1,12 @@
 package com.example.backend.oauth2;
 
 import com.example.backend.jwt.TokenProvider;
-import com.example.backend.jwt.dto.TokenDto;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +22,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        TokenDto token = tokenProvider.generateTokenDto(authentication);
+        com.example.backend.jwt.dto.TokenDTO token = tokenProvider.generateTokenDto(authentication);
 
         response.addCookie(createCookie("accessToken", token.getAccessToken()));
         response.addCookie(createCookie("refreshToken", token.getRefreshToken()));

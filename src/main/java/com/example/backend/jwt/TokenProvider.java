@@ -2,7 +2,6 @@ package com.example.backend.jwt;
 
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
-import com.example.backend.jwt.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -45,7 +44,7 @@ public class TokenProvider {
     }
 
     // 토큰 생성
-    public TokenDto generateTokenDto(Authentication authentication) {
+    public com.example.backend.jwt.dto.TokenDTO generateTokenDto(Authentication authentication) {
 
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -75,7 +74,7 @@ public class TokenProvider {
 
         tokenStore.storeRefreshToken(String.valueOf(userId), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
 
-        return TokenDto.builder()
+        return com.example.backend.jwt.dto.TokenDTO.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .tokenExpiresIn(accessTokenExpiresIn.getTime())

@@ -1,9 +1,9 @@
 package com.example.backend.controller.userAccount;
 
 
-import com.example.backend.dto.userAccount.ChangePasswordRequestDto;
-import com.example.backend.dto.userAccount.UserAccountRequestDto;
-import com.example.backend.dto.userAccount.UserAccountResponseDto;
+import com.example.backend.dto.userAccount.ChangePasswordRequestDTO;
+import com.example.backend.dto.userAccount.UserAccountRequestDTO;
+import com.example.backend.dto.userAccount.UserAccountResponseDTO;
 import com.example.backend.service.userAccount.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,19 +22,19 @@ public class UserAccountController {
     private final UserAccountService userAccountService;
 
     @GetMapping("/info")
-    public ResponseEntity<UserAccountResponseDto> getMyAccountInfo() {
-        UserAccountResponseDto myInfoBySecurity = userAccountService.getMyInfoBySecurity();
+    public ResponseEntity<UserAccountResponseDTO> getMyAccountInfo() {
+        UserAccountResponseDTO myInfoBySecurity = userAccountService.getMyInfoBySecurity();
         System.out.println(myInfoBySecurity.getNickname());
         return ResponseEntity.ok(myInfoBySecurity);
     }
 
     @PostMapping("/nickname")
-    public ResponseEntity<UserAccountResponseDto> changeUserAccountNickname(@RequestBody UserAccountRequestDto requestDto) {
+    public ResponseEntity<UserAccountResponseDTO> changeUserAccountNickname(@RequestBody UserAccountRequestDTO requestDto) {
         return ResponseEntity.ok(userAccountService.changeUserAccountNickname(requestDto.getUserId(), requestDto.getNickname()));
     }
 
     @PostMapping("/password")
-    public ResponseEntity<UserAccountResponseDto> changeUserAccountPassword(@RequestBody ChangePasswordRequestDto requestDto, Authentication authentication){
+    public ResponseEntity<UserAccountResponseDTO> changeUserAccountPassword(@RequestBody ChangePasswordRequestDTO requestDto, Authentication authentication){
         return ResponseEntity.ok(userAccountService.changeUserAccountPassword(authentication, requestDto.getPassword(), requestDto.getNewPassword()));
     }
 }
