@@ -13,19 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LetterSaveDTO {
     private Long orderId;
-    private Long userAccountId;
+    private String createdAt;
     private String messageContent;
-    private float sentimentScore;
     private String sentimentLabel;
-    private LocalDateTime createdAt;
+    private Float sentimentScore;
+    private Long storeId;
 
-    public LetterSave toEntity() {
-        return LetterSave.builder()
-                .id(orderId)
-                .messageContent(messageContent)
-                .sentimentScore(sentimentScore)
-                .sentimentLabel(sentimentLabel)
-                .createdAt(createdAt)
-                .build();
-    }
 }

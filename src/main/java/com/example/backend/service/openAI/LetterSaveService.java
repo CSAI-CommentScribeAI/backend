@@ -1,5 +1,6 @@
 package com.example.backend.service.openAI;
 
+import com.example.backend.dto.openAI.LetterSaveDTO;
 import com.example.backend.entity.openAI.LetterSave;
 import com.example.backend.entity.order.Order;
 import com.example.backend.entity.store.Store;
@@ -26,7 +27,20 @@ public class LetterSaveService {
 
     }
 
-    public String getLetter(Order order) {
-        return letterSaveRepository.findByOrderId(order.getId()).getMessageContent().toString();
+    public LetterSaveDTO getLetter(Long orderId) {
+        LetterSave letterSave = letterSaveRepository.findByOrderId(orderId);
+        if (letterSave == null) {
+            return null;
+        }
+
+        LetterSaveDTO dto = new LetterSaveDTO();
+        dto.setOrderId(letterSave.getId());
+        dto.setCreatedAt(letterSave.getCreatedAt().toString());
+        dto.setMessageContent(letterSave.getMessageContent());
+        dto.setSentimentLabel(letterSave.getSentimentLabel());
+        dto.setSentimentScore(letterSave.getSentimentScore());
+        dto.setStoreId(letterSave.getStore().getId());
+
+        return dto;
     }
 }

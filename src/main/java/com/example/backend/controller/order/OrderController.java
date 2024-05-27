@@ -3,8 +3,10 @@ package com.example.backend.controller.order;
 import com.example.backend.dto.ResponseDTO;
 import com.example.backend.dto.openAI.ChatGPTRequestDTO;
 import com.example.backend.dto.openAI.ChatGPTResponseDTO;
+import com.example.backend.dto.openAI.LetterSaveDTO;
 import com.example.backend.dto.order.OrderDTO;
 import com.example.backend.entity.comment.Review;
+import com.example.backend.entity.openAI.LetterSave;
 import com.example.backend.entity.order.Order;
 import com.example.backend.entity.order.OrderMenu;
 import com.example.backend.entity.store.Store;
@@ -157,17 +159,15 @@ public class OrderController {
     }
 
     @GetMapping("/letter/{orderId}")
+    @Transactional
     public ResponseEntity<?> getLetter(@PathVariable Long orderId) {
-        Order order = orderService.getOrderById(orderId);
-        if (order == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found.");
-        }
 
-        String letter = letterSaveService.getLetter(order);
-        if (letter == null) {
+        LetterSaveDTO letterSave = letterSaveService.getLetter(orderId);
+        if (letterSave == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Letter not found.");
         }
-        return ResponseEntity.ok(letter);
+        System.out.println("LetterSave : " + letterSave);
+        return ResponseEntity.ok(letterSave);
     }
 
     @PutMapping("/delivery/{orderId}")

@@ -5,5 +5,5 @@ import com.example.backend.entity.openAI.LetterSave;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LetterSaveRepository extends JpaRepository<LetterSave, Long> {
-    GetRawMessageContentResult findByOrderId(Long id);
+    LetterSave findByOrderId(Long id);
 }
