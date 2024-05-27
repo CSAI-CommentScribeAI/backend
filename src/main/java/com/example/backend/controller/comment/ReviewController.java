@@ -2,6 +2,7 @@ package com.example.backend.controller.comment;
 
 import com.example.backend.dto.ResponseDTO;
 import com.example.backend.dto.comment.ReviewDTO;
+import com.example.backend.dto.comment.ReviewRequestDTO;
 import com.example.backend.entity.comment.Review;
 import com.example.backend.repository.comment.ReviewRepository;
 import com.example.backend.service.comment.ReviewService;
@@ -25,10 +26,10 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("/{storeId}")
-    public ResponseDTO<?> createReview(Authentication authentication, @RequestBody ReviewDTO reviewDTO, @PathVariable int storeId) {
+    @PostMapping("/{orderId}")
+    public ResponseDTO<?> createReview(Authentication authentication, @RequestBody ReviewRequestDTO reviewDTO, @PathVariable int orderId) {
         try {
-            Review review = reviewService.createReview(authentication, reviewDTO, storeId);
+            ReviewDTO review = reviewService.createReview(authentication, reviewDTO, orderId);
             return ResponseDTO.builder()
                     .status(200)
                     .data(review)
@@ -46,7 +47,7 @@ public class ReviewController {
     public ResponseDTO<?> updateReview(Authentication authentication, @PathVariable int reviewId,
                                        @RequestBody ReviewDTO reviewDTO) {
         try {
-            Review review = reviewService.updateReview(authentication, reviewId, reviewDTO);
+            ReviewDTO review = reviewService.updateReview(authentication, reviewId, reviewDTO);
             return ResponseDTO.builder()
                     .status(200)
                     .data(review)
@@ -79,7 +80,7 @@ public class ReviewController {
 
     @GetMapping("/store/{storeId}")
     public ResponseDTO<?> getReviewByStoreId(@PathVariable int storeId) {
-        List<Review> reviews = reviewService.getReviewsByStoreId(storeId);
+        List<ReviewDTO> reviews = reviewService.getReviewsByStoreId(storeId);
         return ResponseDTO.builder()
                 .status(200)
                 .data(reviews)
@@ -88,7 +89,7 @@ public class ReviewController {
 
     @GetMapping("/user/{userId}")
     public ResponseDTO<?> getReviewByUserId(@PathVariable int userId) {
-        List<Review> reviews = reviewService.getReviewsByUserId(userId);
+        List<ReviewDTO> reviews = reviewService.getReviewsByUserId(userId);
         return ResponseDTO.builder()
                 .status(200)
                 .data(reviews)
@@ -97,7 +98,7 @@ public class ReviewController {
 
     @GetMapping("/order/{orderId}")
     public ResponseDTO<?> getReviewByOrderId(@PathVariable int orderId) {
-        Review review = reviewService.getReviewByOrderId(orderId);
+        ReviewDTO review = reviewService.getReviewByOrderId(orderId);
         return ResponseDTO.builder()
                 .status(200)
                 .data(review)

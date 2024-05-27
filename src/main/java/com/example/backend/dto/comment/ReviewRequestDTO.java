@@ -14,10 +14,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewDTO {
-    private Long orderId;
+public class ReviewRequestDTO {
     private String comment;
-    private Long userId;
-    private Long storeId;
-    private List<ReplyDTO> replies;
 }
