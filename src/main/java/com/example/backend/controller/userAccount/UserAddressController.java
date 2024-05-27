@@ -1,5 +1,6 @@
 package com.example.backend.controller.userAccount;
 
+
 import com.example.backend.dto.userAccount.UserAccountResponseDTO;
 import com.example.backend.dto.userAccount.UserAddressDTO;
 import com.example.backend.service.userAccount.UserAddressService;
@@ -19,8 +20,8 @@ public class UserAddressController {
     private UserAddressService userAddressService;
 
     @PostMapping
-    public ResponseEntity<?> createUserAddress(@RequestBody UserAddressDTO userAddressDto, Authentication authentication) {
-        int userAddressId = userAddressService.createUserAddress(userAddressDto, authentication);
+    public ResponseEntity<?> createUserAddress(@RequestBody UserAddressDTO userAddressDTO, Authentication authentication) {
+        int userAddressId = userAddressService.createUserAddress(userAddressDTO, authentication);
         UserAccountResponseDTO updated = userAddressService.updateMainAddress(userAddressId, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).body(updated); // 새로운 주소가 생성되었음을 나타내는 상태 코드 201과 함께 생성된 주소 정보를 반환
     }

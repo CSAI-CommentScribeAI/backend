@@ -31,10 +31,8 @@ public class Reply {
     @Column(nullable = false)
     private LocalDateTime createAt;  // 리뷰 작성 시간
 
-    @Column(nullable = true)
     private LocalDateTime updateAt;  // 리뷰 수정 시간
 
-    @Column(nullable = true)
     private LocalDateTime deleteAt;  // 리뷰 삭제 시간
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,11 +40,6 @@ public class Reply {
     private UserAccount userAccount;  // User 엔티티와의 관계 - 비식별 관계
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private Store store;  // Store 엔티티와의 관계 - 비식별 관계
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id", referencedColumnName = "id")
+    @JoinColumn(name = "review_id")
     private Review review;  // Review 엔티티와의 관계 - 식별 관계, Review의 id를 참조
-
 }

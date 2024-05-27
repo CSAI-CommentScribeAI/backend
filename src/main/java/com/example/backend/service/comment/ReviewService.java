@@ -1,6 +1,10 @@
 package com.example.backend.service.comment;
 
+import com.example.backend.dto.comment.ReplyDTO;
 import com.example.backend.dto.comment.ReviewDTO;
+import com.example.backend.dto.comment.ReviewRequestDTO;
+import com.example.backend.dto.userAccount.UserAccountRequestDTO;
+import com.example.backend.entity.comment.Reply;
 import com.example.backend.entity.comment.Review;
 import com.example.backend.entity.order.Order;
 import com.example.backend.entity.store.Store;
@@ -11,7 +15,10 @@ import com.example.backend.repository.comment.ReviewRepository;
 import com.example.backend.repository.order.OrderRepository;
 import com.example.backend.repository.store.StoreRepository;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -27,27 +34,32 @@ public class ReviewService {
     private final OrderRepository orderRepository;
     private final ReviewRepository reviewRepository;
 
-    public Review createReview(Authentication authentication, ReviewDTO reviewDTO, int storeId) {
-        // 사용자의 ID 가져오기
+    public ReviewDTO createReview(Authentication authentication, ReviewRequestDTO reviewDTO, int orderId) {
         String userId = authentication.getName();
-
-        // 사용자 계정을 데이터베이스에서 조회
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
 
-        // 사용자의 역할이 ROLE_USER가 아니라면 예외 발생
         if (userAccount.getUserRole() != UserRole.ROLE_USER) {
             throw new IllegalStateException("User does not have permission to register a review.");
         }
 
-        // 상점과 주문 객체 조회
-        Store store = storeRepository.findById((long) storeId)
-                .orElseThrow(() -> new IllegalStateException("Store not found with ID: " + reviewDTO.getStoreId()));
+        Order order = orderRepository.findById((long) orderId)
+                .orElseThrow(() -> new IllegalStateException("Order not found with ID: " + orderId));
 
-        Order order = orderRepository.findById((long) reviewDTO.getOrderId())
-                .orElseThrow(() -> new IllegalStateException("Order not found with ID: " + reviewDTO.getOrderId()));
+        LocalDateTime createdTime = order.getCreatedTime();
+        LocalDateTime now = LocalDateTime.now();
+        long daysBetween = ChronoUnit.DAYS.between(createdTime, now);
+        if (daysBetween > 3) {
+            throw new IllegalStateException("Cannot register a review for an order older than 3 days.");
+        }
 
-        // Review 객체 생성 및 설정
+        if (!Long.valueOf(userId).equals(order.getUserAccount().getId())) {
+            throw new IllegalStateException("User does not have permission to register a review.");
+        }
+
+        Store store = storeRepository.findById(order.getStoreId())
+                .orElseThrow(() -> new IllegalStateException("Store not found with ID: " + order.getStoreId()));
+
         Review review = Review.builder()
                 .comment(reviewDTO.getComment())
                 .createAt(LocalDateTime.now())
@@ -56,13 +68,12 @@ public class ReviewService {
                 .order(order)
                 .build();
 
-        // Review 객체를 데이터베이스에 저장
         reviewRepository.save(review);
 
-        return review;
+        return toReviewDTO(review);
     }
 
-    public Review updateReview(Authentication authentication, int reviewId, ReviewDTO reviewDTO) {
+    public ReviewDTO updateReview(Authentication authentication, int orderId, ReviewDTO reviewDTO) {
         // 사용자의 ID 가져오기
         String userId = authentication.getName();
 
@@ -71,8 +82,8 @@ public class ReviewService {
                 .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
 
         // 기존 리뷰를 데이터베이스에서 조회
-        Review review = reviewRepository.findById((long) reviewId)
-                .orElseThrow(() -> new IllegalStateException("Review not found with ID: " + reviewId));
+        Review review = reviewRepository.findById((long) orderId)
+                .orElseThrow(() -> new IllegalStateException("Review not found with ID: " + orderId));
 
         // 사용자가 해당 리뷰의 작성자인지 확인
         if (!review.getUserAccount().getId().equals(userAccount.getId())) {
@@ -86,10 +97,10 @@ public class ReviewService {
         // Review 객체를 데이터베이스에 저장 (업데이트)
         reviewRepository.save(review);
 
-        return review;
+        return toReviewDTO(review);
     }
 
-    public void deleteReview(Authentication authentication, int reviewId) {
+    public void deleteReview(Authentication authentication, int orderId) {
         // 사용자의 ID 가져오기
         String userId = authentication.getName();
 
@@ -98,8 +109,8 @@ public class ReviewService {
                 .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
 
         // 기존 리뷰를 데이터베이스에서 조회
-        Review review = reviewRepository.findById((long) reviewId)
-                .orElseThrow(() -> new IllegalStateException("Review not found with ID: " + reviewId));
+        Review review = reviewRepository.findById((long) orderId)
+                .orElseThrow(() -> new IllegalStateException("Review not found with ID: " + orderId));
 
         // 사용자가 해당 리뷰의 작성자인지 확인
         if (!review.getUserAccount().getId().equals(userAccount.getId())) {
@@ -110,15 +121,47 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    public List<Review> getReviewsByStoreId(int storeId) {
-        return reviewRepository.findByStoreId((long) storeId);
+    public List<ReviewDTO> getReviewsByStoreId(int storeId) {
+        List<Review> reviews = reviewRepository.findByStoreId((long) storeId);
+        return reviews.stream().map(this::toReviewDTO).collect(Collectors.toList());
     }
 
-    public List<Review> getReviewsByUserId(int userId) {
-        return reviewRepository.findByUserAccountId((long) userId);
+    public List<ReviewDTO> getReviewsByUserId(int userId) {
+        List<Review> reviews = reviewRepository.findByUserAccountId((long) userId);
+        return reviews.stream().map(this::toReviewDTO).collect(Collectors.toList());
     }
 
-    public Review getReviewByOrderId(int orderId) {
-        return reviewRepository.findByOrderId((long) orderId);
+    public ReviewDTO getReviewByOrderId(int orderId) {
+        Review review = reviewRepository.findByOrderId((long) orderId);
+        return toReviewDTO(review);
+    }
+
+    private ReviewDTO toReviewDTO(Review review) {
+        return ReviewDTO.builder()
+                .orderId(review.getOrder().getId())
+                .comment(review.getComment())
+                .userId(review.getUserAccount().getId())
+                .storeId(review.getStore().getId())
+                .replies(review.getReplies() == null ? new ArrayList<>() : review.getReplies().stream()
+                        .map(this::toReplyDTO)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    private UserAccountRequestDTO toUserAccountDTO(UserAccount userAccount) {
+        return UserAccountRequestDTO.builder()
+                .email(userAccount.getEmail())
+                .nickname(userAccount.getNickname())
+                .build();
+    }
+
+    private ReplyDTO toReplyDTO(Reply reply) {
+        return ReplyDTO.builder()
+                .id(reply.getId())
+                .comment(reply.getComment())
+                .createAt(reply.getCreateAt())
+                .updateAt(reply.getUpdateAt())
+                .deleteAt(reply.getDeleteAt())
+                .build();
     }
 }
