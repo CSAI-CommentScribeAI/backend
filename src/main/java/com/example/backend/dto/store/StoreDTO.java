@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoreDTO {
-    @JsonIgnore // ID 필드를 JSON 응답에서 숨깁니다.
     private Long id;
     private String name; // 매장명
     private int minOrderPrice; // 최소 주문금액
