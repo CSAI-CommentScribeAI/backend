@@ -87,6 +87,9 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
+        jdbc:
+          lob:
+            non_contextual_creation: true
 
   h2.console.enabled: true
 #AWS 액세스 IAMMUSER 정보
@@ -138,3 +141,11 @@ debug: false
 
 jwt:
   secret: ${JWT_SECRET}
+
+openai:
+  apikey: ${OPENAI_API}
+  model: gpt-3.5-turbo
+  apiurl: https://api.openai.com/v1/chat/completions
+
+
+

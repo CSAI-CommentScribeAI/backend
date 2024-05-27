@@ -2,6 +2,7 @@ package com.example.backend.service.order;
 
 import com.example.backend.dto.order.OrderDTO;
 import com.example.backend.dto.order.OrderMenuDTO;
+import com.example.backend.entity.comment.Review;
 import com.example.backend.entity.menu.Menu;
 import com.example.backend.entity.order.Order;
 import com.example.backend.entity.order.OrderMenu;
@@ -11,14 +12,17 @@ import com.example.backend.repository.UserAccount.UserAccountRepository;
 import com.example.backend.repository.cart.CartRepository;
 import com.example.backend.repository.menu.MenuRepository;
 import com.example.backend.repository.order.OrderRepository;
+import com.example.backend.repository.store.StoreRepository;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.backend.repository.comment.ReviewRepository;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -28,6 +32,8 @@ public class OrderImplService implements OrderService {
     private final OrderRepository orderRepository;
     private final MenuRepository menuRepository;
     private final CartRepository cartRepository;
+    private final ReviewRepository reviewRepository;
+    private final StoreRepository storeRepository;
 
     @Transactional
     public OrderDTO createOrderFromCart(Authentication authentication, OrderDTO orderDTO) {
@@ -79,6 +85,38 @@ public class OrderImplService implements OrderService {
             throw new RuntimeException("Error placing order.");
         }
     }
+
+    @Override
+    public OrderDTO deliveryOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with orderId: " + orderId));
+
+        order.setOrderStatus(OrderStatus.DELIVERED);
+
+        Order savedOrder = orderRepository.save(order);
+        if (savedOrder == null) {
+            throw new RuntimeException("Error placing order.");
+        }
+        return toOrderDTO(savedOrder);
+    }
+
+    @Override
+    public Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Invalid order ID"));
+    }
+
+    @Override
+    public List<Review> getRecentReviewsForUserAndStore(Long userId, Long storeId) {
+        List<Review> reviews = reviewRepository.findTop10ByUserAccountIdAndStoreIdOrderByCreateAtDesc(userId, storeId);
+        return Optional.ofNullable(reviews).orElse(Collections.emptyList());
+    }
+
+
+    @Override
+    public int getOrderCountForUserAndStore(Long userId, Long storeId) {
+        return orderRepository.countByUserIdAndStoreId(userId, storeId);
+    }
+
 
     private OrderMenu toOrderMenuEntity(OrderMenuDTO orderMenuDTO, Order order) {
         Menu menu = menuRepository.findById(orderMenuDTO.getMenuId())
