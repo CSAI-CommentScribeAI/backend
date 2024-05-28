@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDTO {
-    private Long id;
+    private Long orderId;
     private OrderStatus orderStatus;
     private Long storeId;
     private int totalPrice;

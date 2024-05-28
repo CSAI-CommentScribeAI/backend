@@ -18,4 +18,6 @@ public interface OrderService {
     void placeOrder(Long orderId, boolean approve);
 
     OrderDTO deliveryOrder(Long orderId);
+
+    List<OrderDTO> getStoreOrders(Long storeId);
 }

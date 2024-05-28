@@ -65,8 +65,10 @@ public class OrderImplService implements OrderService {
 
         cartRepository.deleteByUserId(userAccount.getId());
 
+        OrderDTO orderSaveDTO = toOrderDTO(savedOrder);
+        orderSaveDTO.setOrderId(savedOrder.getId());
         // OrderDTO 반환
-        return toOrderDTO(savedOrder);
+        return orderSaveDTO;
     }
 
     @Override
@@ -98,6 +100,15 @@ public class OrderImplService implements OrderService {
             throw new RuntimeException("Error placing order.");
         }
         return toOrderDTO(savedOrder);
+    }
+
+    @Override
+    public List<OrderDTO> getStoreOrders(Long storeId) {
+        List<Order> orders = orderRepository.findByStoreId(storeId);
+        return Optional.ofNullable(orders).orElse(Collections.emptyList())
+                .stream()
+                .map(this::toOrderDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -133,7 +144,7 @@ public class OrderImplService implements OrderService {
 
     private OrderDTO toOrderDTO(Order order) {
         return OrderDTO.builder()
-                .id(order.getId())
+                .orderId(order.getId())
                 .orderStatus(order.getOrderStatus())
                 .storeId(order.getStoreId())
                 .totalPrice(order.getTotalPrice())

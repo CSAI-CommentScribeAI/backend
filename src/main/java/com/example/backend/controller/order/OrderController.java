@@ -62,10 +62,16 @@ public class OrderController {
         // 모든 체크를 통과하면 주문 객체 생성
          OrderDTO orderSaveDTO = orderService.createOrderFromCart(authentication, orderDTO );
         if (orderSaveDTO != null) {
-            return ResponseEntity.ok(orderDTO);
+            return ResponseEntity.ok(orderSaveDTO);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating order.");
         }
+    }
+
+    @GetMapping("/{storeId}")
+    public ResponseEntity<?> getStoreOrders(@PathVariable Long storeId) {
+        List<OrderDTO> orders = orderService.getStoreOrders(storeId);
+        return ResponseEntity.ok(orders);
     }
 
 
