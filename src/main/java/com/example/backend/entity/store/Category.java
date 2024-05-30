@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 public enum Category {
     HAMBURGER("햄버거"),
     PIZZA("피자"),
-    COFFEE("커피"),
-    DESSERT("디저트"),
+    DESSERT("디저트/커피"),
     KOREANFOOD("한식"),
     CHINESEFOOD("중식"),
     FLOURBASEDFOOD("분식"),

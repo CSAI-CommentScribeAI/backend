@@ -7,6 +7,11 @@ spring:
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 40MB
+      max-request-size: 40MB
 
   security:
     user:
@@ -104,12 +109,6 @@ cloud:
     stack:
       auto: false
 
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 40MB
-      max-request-size: 40MB
-
   sql:
     init:
       mode: always
@@ -143,5 +142,5 @@ payment:
   toss:
     test_client_api_key : ${TOSS_TEST_CLIENT_APIKEY}
     test_secrete_api_key : ${TOSS_TEST_SECRET_APIKEY}
-    success_url : ${TOSS_SUCCEESS_URL}
+    success_url : ${TOSS_SUCCESS_URL}
     fail_url : ${TOSS_FAIL_URL}
