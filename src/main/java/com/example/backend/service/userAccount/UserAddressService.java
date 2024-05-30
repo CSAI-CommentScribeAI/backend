@@ -27,7 +27,7 @@ public class UserAddressService {
     }
 
     @Transactional
-    public int createUserAddress(UserAddressDto userAddressDto, Authentication authentication) {
+    public int createUserAddress(UserAddressDTO userAddressDto, Authentication authentication) {
         if (authentication == null) {
             throw new RuntimeException("Authentication information is not available.");
         }
@@ -69,7 +69,7 @@ public class UserAddressService {
     }
 
     @Transactional
-    public UserAccountResponseDto updateMainAddress(int addressId, Authentication authentication){
+    public UserAccountResponseDTO updateMainAddress(int addressId, Authentication authentication){
         if (authentication == null) {
             throw new RuntimeException("Authentication information is not available.");
         }

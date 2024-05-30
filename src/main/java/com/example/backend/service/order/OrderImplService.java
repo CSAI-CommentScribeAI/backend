@@ -95,6 +95,7 @@ public class OrderImplService implements OrderService {
 
     private OrderDTO toOrderDTO(Order order) {
         return OrderDTO.builder()
+                .orderId(order.getId())
                 .orderStatus(order.getOrderStatus())
                 .storeId(order.getStoreId())
                 .totalPrice(order.getTotalPrice())
