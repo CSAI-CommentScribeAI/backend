@@ -23,7 +23,7 @@ import lombok.Data;
 public class Reply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;  // 리뷰의 고유 ID
+    private Long id;  // 리뷰의 고유 ID
 
     @Column(nullable = false)
     private String comment;  // 리뷰 내용
