@@ -43,6 +43,8 @@ public class Review {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    private float rating;  // 별점
+
     @Column(nullable = false)
     private String comment;  // 리뷰 내용
 

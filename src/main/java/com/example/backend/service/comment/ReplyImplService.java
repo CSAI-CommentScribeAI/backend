@@ -7,6 +7,7 @@ import com.example.backend.dto.openAI.ReplySaveDTO;
 import com.example.backend.entity.comment.Reply;
 import com.example.backend.entity.comment.Review;
 import com.example.backend.entity.openAI.ReplySave;
+import com.example.backend.entity.order.Order;
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
 import com.example.backend.repository.comment.ReplyRepository;
@@ -167,6 +168,7 @@ public class ReplyImplService implements ReplyService{
         UserAccount userAccount = userAccountRepository.findById(review.getUserAccount().getId())
                 .orElseThrow(() -> new IllegalStateException("User not found with ID: " + review.getUserAccount().getId()));
 
+        Order order = review.getOrder();
 
         String prompt = "리뷰 내용: " + review.getComment();
 
