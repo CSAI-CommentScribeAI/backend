@@ -109,13 +109,13 @@ public class ReplyController {
     }
 
     @PostMapping("/ai/{reviewId}")
-public ResponseDTO<?> createReplyByAI(Authentication authentication, @PathVariable int reviewId) {
+    public ResponseDTO<?> createReplyByAI(Authentication authentication, @PathVariable int reviewId) {
         try {
-            String reply = replyService.createReplyByAI(authentication, reviewId);
-            return ResponseDTO.builder()
-                    .status(200)
-                    .data(reply)
-                    .build();
+                String reply = replyService.createReplyByAI(authentication, reviewId);
+                return ResponseDTO.builder()
+                        .status(200)
+                        .data(reply)
+                        .build();
         } catch (Exception e) {
             String error = e.getMessage();
             return ResponseDTO.builder()
