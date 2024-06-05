@@ -109,6 +109,4 @@ public class StoreController {
         }
         return storeService.findStoresByOwner(authentication);
     }
-
-
 }

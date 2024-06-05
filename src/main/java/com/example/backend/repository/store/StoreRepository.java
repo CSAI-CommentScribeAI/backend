@@ -2,6 +2,7 @@ package com.example.backend.repository.store;
 
 import com.example.backend.entity.store.Category;
 import com.example.backend.entity.store.Store;
+import com.example.backend.entity.userAccount.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,11 +17,11 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     Optional<Store> findByIdWithMenus(Long id);
 
     @Query("select s from Store s join fetch s.userAccount u where s.userAccount.id = :userId")
-    Optional<Store> findByUserAccount(String userId);
+    Optional<Store> findByUserAccount_Id(Long userId);
 
     List<Store> findByCategory(Category category);
 
     List<Store> findByNameContainingIgnoreCase(String name);
 
+    List<Store> findByUserAccount(UserAccount userAccount);
 }
-

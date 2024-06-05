@@ -56,17 +56,17 @@ public class OrderController {
 
     @Autowired
     private RestTemplate template;
-
+  
     @PostMapping("/")
-    public ResponseEntity<?> createOrderFromCart(@RequestBody OrderDTO orderDTO, Authentication authentication) {
-        // 모든 체크를 통과하면 주문 객체 생성
-         OrderDTO orderSaveDTO = orderService.createOrderFromCart(authentication, orderDTO );
+    public ResponseEntity<OrderDTO> createOrderFromCart(@RequestBody OrderDTO orderDTO, Authentication authentication) {
+        OrderDTO orderSaveDTO = orderService.createOrderFromCart(authentication, orderDTO);
         if (orderSaveDTO != null) {
             return ResponseEntity.ok(orderSaveDTO);
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating order.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     @GetMapping("/{storeId}")
     public ResponseEntity<?> getStoreOrders(@PathVariable Long storeId) {
@@ -79,7 +79,6 @@ public class OrderController {
     @Transactional
     public ResponseEntity<ResponseDTO<String>> placeOrder(@PathVariable Long orderId, @RequestParam boolean approve) {
         try {
-            // 주문 서비스를 호출하여 주문 확정
             orderService.placeOrder(orderId, approve);
 
             if (approve) {

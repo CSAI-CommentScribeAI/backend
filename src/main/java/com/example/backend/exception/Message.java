@@ -48,7 +48,8 @@ public class Message {
     public static final String PAYMENT_NOT_FOUND = "PAYMENT를 찾지 못했습니다.";
     public static final String PAYMENT_AMOUNT_NOT_MATCH = "결제금액이 올바르지 않습니다.";
     public static final String PAYMENT_STATUS = "결제를 완료했는지 확인해주세요.";
-
+    public static final String PAYMENT_AMOUNT_EXP = "결제 금액을 확인해주세요";
+    public static final String ALREADY_PAMENT = "이미 결제가 완료되었습니다 확인해주세요";
     // menuOption
     public static final String MENU_OPTION_NOT_FOUND = "옵션 값을 찾을 수 없습니다.";
 

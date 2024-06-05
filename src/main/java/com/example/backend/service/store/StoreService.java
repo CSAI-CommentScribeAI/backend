@@ -167,6 +167,7 @@ public class StoreService {
                 .map(StoreSearchResponseDTO::entityToDTO)
                 .collect(Collectors.toList());
     }
+
     public List<StoreOwnerDTO> findStoresByOwner(Authentication authentication) {
         if (authentication == null) {
             throw new IllegalArgumentException("Authentication object cannot be null.");
@@ -181,9 +182,9 @@ public class StoreService {
             throw new IllegalStateException("사장님이 아닙니다: " + userId);
         }
 
-        // findByUserAccount 메소드에 UserAccount 객체의 ID를 전달합니다.
-        return storeRepository.findById(Long.valueOf(userId))
-                .stream()
+        // findByUserAccount 메소드에 UserAccount 객체를 전달합니다.
+        List<Store> stores = storeRepository.findByUserAccount(userAccount);
+        return stores.stream()
                 .map(StoreOwnerDTO::entityToDTO)
                 .collect(Collectors.toList());
     }
