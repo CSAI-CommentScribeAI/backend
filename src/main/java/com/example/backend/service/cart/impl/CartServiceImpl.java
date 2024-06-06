@@ -12,6 +12,7 @@ import com.example.backend.entity.userAccount.UserAddress;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
 import com.example.backend.repository.UserAccount.UserAddressRepository;
 import com.example.backend.repository.cart.CartRepository;
+import com.example.backend.repository.store.StoreRepository;
 import com.example.backend.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,7 @@ public class CartServiceImpl extends CartService {
     private final CartRepository cartRepository;
     private final UserAccountRepository userAccountRepository;
     private final UserAddressRepository userAddressRepository;
-
+    private final StoreRepository storeRepository;
     @Override
     public CartDTO getCartByUserId(Authentication authentication) {
         Long userId = Long.parseLong(authentication.getName());
@@ -45,6 +46,7 @@ public class CartServiceImpl extends CartService {
             CartItemDTO itemDTO = new CartItemDTO();
             itemDTO.setMenuId(item.getMenu().getId());
             itemDTO.setMenuName(item.getMenu().getName());
+            itemDTO.setPrice(item.getMenu().getPrice());
             itemDTO.setImageUrl(item.getImageUrl());
             cartItems.add(itemDTO);
         });
@@ -58,6 +60,7 @@ public class CartServiceImpl extends CartService {
             throw new IllegalStateException("사용자의 주소를 찾을 수 없습니다: " + userAccount.getId());
         }
         UserAddress userAddress = userAddresses.get(0);
+        cartDTO.setStoreName(cart.getStoreName());
         cartDTO.setUserAddress(userAddress.getFullAddress());
 
         return cartDTO;
@@ -70,11 +73,13 @@ public class CartServiceImpl extends CartService {
         UserAccount user = userAccountRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다: " + userId));
 
+        Optional<Store> store = storeRepository.findById(menuDTO.getStoreId());
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
                     newCart.setUser(user);
                     newCart.setStoreId(menuDTO.getStoreId());
+                    newCart.setStoreName(store.get().getName());
                     cartRepository.save(newCart);
                     return newCart;
                 });
@@ -101,7 +106,7 @@ public class CartServiceImpl extends CartService {
 
     private void addNewItem(Cart cart, MenuDTO menuDTO) {
         if (cart.getStoreId() == null) {
-            cart.setStoreId(menuDTO.getStoreId()); // 수정된 부분
+            cart.setStoreId(menuDTO.getStoreId());
         }
         CartItem newCartItem = new CartItem();
         newCartItem.setMenu(Menu.builder()
