@@ -15,5 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewRequestDTO {
+    private float rating;
     private String comment;
 }

@@ -61,6 +61,7 @@ public class ReviewService {
                 .orElseThrow(() -> new IllegalStateException("Store not found with ID: " + order.getStoreId()));
 
         Review review = Review.builder()
+                .rating(reviewDTO.getRating())
                 .comment(reviewDTO.getComment())
                 .createAt(LocalDateTime.now())
                 .userAccount(userAccount)
@@ -91,6 +92,7 @@ public class ReviewService {
         }
 
         // 리뷰 내용과 수정 시간을 업데이트
+        review.setRating(reviewDTO.getRating());
         review.setComment(reviewDTO.getComment());
         review.setUpdateAt(LocalDateTime.now());
 
@@ -139,6 +141,7 @@ public class ReviewService {
     private ReviewDTO toReviewDTO(Review review) {
         return ReviewDTO.builder()
                 .orderId(review.getOrder().getId())
+                .rating(review.getRating())
                 .comment(review.getComment())
                 .userId(review.getUserAccount().getId())
                 .storeId(review.getStore().getId())

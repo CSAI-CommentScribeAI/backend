@@ -33,7 +33,6 @@ public class OrderImplService implements OrderService {
     private final MenuRepository menuRepository;
     private final CartRepository cartRepository;
     private final ReviewRepository reviewRepository;
-    private final StoreRepository storeRepository;
 
     @Transactional
     public OrderDTO createOrderFromCart(Authentication authentication, OrderDTO orderDTO) {

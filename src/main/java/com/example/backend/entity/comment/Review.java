@@ -43,6 +43,8 @@ public class Review {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    private float rating;  // 별점
+
     @Column(nullable = false)
     private String comment;  // 리뷰 내용
 
@@ -64,6 +66,7 @@ public class Review {
     private Store store;  // Store 엔티티와의 관계 - 비식별 관계
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Builder.Default
     private List<Reply> replies = new ArrayList<>();  // Review와 Reply의 일대다 관계
 
     public List<Reply> getReplies() {
