@@ -17,6 +17,7 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 ID 생성
     private Long id;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id") // 외래키 설정
     private Menu menu; // Menu 객체 참조

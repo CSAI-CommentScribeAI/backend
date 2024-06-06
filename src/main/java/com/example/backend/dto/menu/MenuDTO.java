@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class MenuDTO {
     private Long id;
-    @JsonIgnore
     private Long storeId;
     private String name;
     private String imageUrl;

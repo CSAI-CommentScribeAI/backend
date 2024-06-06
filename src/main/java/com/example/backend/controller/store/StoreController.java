@@ -61,11 +61,15 @@ public class StoreController {
     }
 
     @ApiOperation(value = "카테고리별 가게 조회")
-    @PostMapping("/category")
-    public ResponseDTO<?> selectCategory(@RequestBody CategoryDTO categoryDTO){
-        return new ResponseDTO<>(HttpStatus.OK.value(),
-                storeService.selectCategory(categoryDTO));
+    @GetMapping("/category/stores")
+    public ResponseDTO<?> selectCategoryByCategory(@RequestParam("category") Category category) {
+        CategoryDTO categoryDTO = CategoryDTO.builder()
+                .category(category)
+                .category_ko(category.label())
+                .build();
+        return new ResponseDTO<>(HttpStatus.OK.value(), storeService.selectCategory(categoryDTO));
     }
+
 
     @ApiOperation(value = "가게정보 수정", notes = "id, name, minOrderPrice, backgroundImageUrl, category, infor을 받는다.")
     @PutMapping("/{storeId}")

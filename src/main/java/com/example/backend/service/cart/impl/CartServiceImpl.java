@@ -12,6 +12,7 @@ import com.example.backend.entity.userAccount.UserAddress;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
 import com.example.backend.repository.UserAccount.UserAddressRepository;
 import com.example.backend.repository.cart.CartRepository;
+import com.example.backend.repository.store.StoreRepository;
 import com.example.backend.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,7 @@ public class CartServiceImpl extends CartService {
     private final CartRepository cartRepository;
     private final UserAccountRepository userAccountRepository;
     private final UserAddressRepository userAddressRepository;
-
+    private final StoreRepository storeRepository;
     @Override
     public CartDTO getCartByUserId(Authentication authentication) {
         Long userId = Long.parseLong(authentication.getName());
@@ -70,11 +71,13 @@ public class CartServiceImpl extends CartService {
         UserAccount user = userAccountRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다: " + userId));
 
+        Optional<Store> store = storeRepository.findById(menuDTO.getStoreId());
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
                     newCart.setUser(user);
                     newCart.setStoreId(menuDTO.getStoreId());
+                    newCart.setStoreName(store.get().getName());
                     cartRepository.save(newCart);
                     return newCart;
                 });
