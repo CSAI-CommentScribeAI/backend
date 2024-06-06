@@ -46,6 +46,7 @@ public class CartServiceImpl extends CartService {
             CartItemDTO itemDTO = new CartItemDTO();
             itemDTO.setMenuId(item.getMenu().getId());
             itemDTO.setMenuName(item.getMenu().getName());
+            itemDTO.setPrice(item.getMenu().getPrice());
             itemDTO.setImageUrl(item.getImageUrl());
             cartItems.add(itemDTO);
         });
@@ -59,6 +60,7 @@ public class CartServiceImpl extends CartService {
             throw new IllegalStateException("사용자의 주소를 찾을 수 없습니다: " + userAccount.getId());
         }
         UserAddress userAddress = userAddresses.get(0);
+        cartDTO.setStoreName(cart.getStoreName());
         cartDTO.setUserAddress(userAddress.getFullAddress());
 
         return cartDTO;
@@ -104,7 +106,7 @@ public class CartServiceImpl extends CartService {
 
     private void addNewItem(Cart cart, MenuDTO menuDTO) {
         if (cart.getStoreId() == null) {
-            cart.setStoreId(menuDTO.getStoreId()); // 수정된 부분
+            cart.setStoreId(menuDTO.getStoreId());
         }
         CartItem newCartItem = new CartItem();
         newCartItem.setMenu(Menu.builder()
