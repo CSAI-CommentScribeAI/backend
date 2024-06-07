@@ -1,6 +1,5 @@
 package com.example.backend.repository.comment;
 
-import com.example.backend.dto.comment.ReplyDTO;
 import com.example.backend.entity.comment.Reply;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

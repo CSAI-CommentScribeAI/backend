@@ -1,9 +1,5 @@
 package com.example.backend.dto.comment;
 
-import com.example.backend.dto.store.StoreDTO;
-import com.example.backend.dto.userAccount.UserAccountRequestDTO;
-import java.security.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,5 +16,5 @@ public class ReviewDTO {
     private String comment;
     private Long userId;
     private Long storeId;
-    private List<ReplyDTO> replies;
+    private List<ReplyRequestDTO> replies;
 }

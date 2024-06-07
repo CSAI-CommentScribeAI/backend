@@ -1,9 +1,9 @@
 package com.example.backend.service.comment;
 
-import com.example.backend.dto.comment.ReplyDTO;
+import com.example.backend.dto.comment.ReplyRequestDTO;
+import com.example.backend.dto.comment.ReplyResponseDTO;
 import com.example.backend.dto.openAI.ChatGPTRequestDTO;
 import com.example.backend.dto.openAI.ChatGPTResponseDTO;
-import com.example.backend.dto.openAI.ReplySaveDTO;
 import com.example.backend.entity.comment.Reply;
 import com.example.backend.entity.comment.Review;
 import com.example.backend.entity.openAI.ReplySave;
@@ -53,7 +53,7 @@ public class ReplyImplService implements ReplyService{
     private final OrderMenuRepository orderMenuRepository;
 
     @Override
-    public ReplyDTO createReply(Authentication authentication, ReplyDTO replyDTO, int reviewId) {
+    public ReplyResponseDTO createReply(Authentication authentication, ReplyRequestDTO replyRequestDTO, int reviewId) {
         String userId = authentication.getName();
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
@@ -62,14 +62,16 @@ public class ReplyImplService implements ReplyService{
                 .orElseThrow(() -> new IllegalStateException("Review not found with ID: " + reviewId));
 
         Reply reply = new Reply();
-        reply.setComment(replyDTO.getComment());
+        reply.setComment(replyRequestDTO.getComment());
         reply.setUserAccount(userAccount);
         reply.setReview(review);
         reply.setCreateAt(LocalDateTime.now());
-
+        reply.setUserAccount(userAccount);
+        reply.setDeleteAt(null);
+        reply.setUpdateAt(null);
         Reply replySave = replyRepository.save(reply);
 
-        return ReplyDTO.builder()
+        return ReplyResponseDTO.builder()
                 .id(replySave.getId())
                 .comment(replySave.getComment())
                 .createAt(replySave.getCreateAt())
@@ -82,7 +84,7 @@ public class ReplyImplService implements ReplyService{
     }
 
     @Override
-    public ReplyDTO updateReply(Authentication authentication, int replyId, ReplyDTO replyDTO) {
+    public ReplyResponseDTO updateReply(Authentication authentication, int replyId, ReplyRequestDTO replyRequestDTO) {
         String userId = authentication.getName();
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
@@ -94,12 +96,12 @@ public class ReplyImplService implements ReplyService{
             throw new IllegalStateException("User does not have permission to update a reply.");
         }
 
-        reply.setComment(replyDTO.getComment());
+        reply.setComment(replyRequestDTO.getComment());
         reply.setUpdateAt(LocalDateTime.now());
 
         Reply replySave = replyRepository.save(reply);
 
-        return ReplyDTO.builder()
+        return ReplyResponseDTO.builder()
                 .id(replySave.getId())
                 .comment(replySave.getComment())
                 .createAt(replySave.getCreateAt())
@@ -128,11 +130,11 @@ public class ReplyImplService implements ReplyService{
     }
 
     @Override
-    public List<ReplyDTO> getReplyListByStoreId(int storeId) {
+    public List<ReplyResponseDTO> getReplyListByStoreId(int storeId) {
         List<Reply> replyList = replyRepository.findByReviewStoreId((long) storeId);
 
         return replyList.stream()
-                .map(reply -> ReplyDTO.builder()
+                .map(reply -> ReplyResponseDTO.builder()
                         .id(reply.getId())
                         .comment(reply.getComment())
                         .createAt(reply.getCreateAt())
@@ -145,11 +147,11 @@ public class ReplyImplService implements ReplyService{
     }
 
     @Override
-    public List<ReplyDTO> getReplyList(int userId) {
+    public List<ReplyResponseDTO> getReplyList(int userId) {
         List<Reply> replyList = replyRepository.findByUserAccountId((long) userId);
 
         return replyList.stream()
-                .map(reply -> ReplyDTO.builder()
+                .map(reply -> ReplyResponseDTO.builder()
                         .id(reply.getId())
                         .comment(reply.getComment())
                         .createAt(reply.getCreateAt())
@@ -165,15 +167,6 @@ public class ReplyImplService implements ReplyService{
     public String createReplyByAI(Authentication authentication, int reviewId) {
         Review review = reviewRepository.findById((long) reviewId)
                 .orElseThrow(() -> new IllegalStateException("Review not found with ID: " + reviewId));
-
-        String userId = authentication.getName();
-
-        UserAccount ownerAccount = userAccountRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
-
-        if(ownerAccount.getUserRole().equals("ROLE_OWNER")){
-            throw new IllegalStateException("User does not have permission to create a reply.");
-        }
 
         UserAccount userAccount = userAccountRepository.findById(review.getUserAccount().getId())
                 .orElseThrow(() -> new IllegalStateException("User not found with ID: " + review.getUserAccount().getId()));
@@ -234,6 +227,7 @@ public class ReplyImplService implements ReplyService{
         replySave.setReview(review);
         replySave.setReplyContent(reply);
         replySave.setStore(store);
+
 
         replySaveRepository.save(replySave);
 
