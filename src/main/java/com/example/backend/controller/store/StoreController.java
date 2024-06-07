@@ -55,19 +55,19 @@ public class StoreController {
 
     @ApiOperation(value = "가게 여러건 조회", notes = "pageNumber=0&pageSize=10")
     @GetMapping("/")
-    public ResponseDTO<?> selectAll(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-                                    Pageable pageable){
-        return new ResponseDTO<>(HttpStatus.OK.value(), storeService.selectAll(pageable));
+    public ResponseDTO<?> getStoresWithin5Km(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+                                    Pageable pageable, Authentication authentication){
+        return new ResponseDTO<>(HttpStatus.OK.value(), storeService.findStoresWithin5Km(pageable, authentication));
     }
 
     @ApiOperation(value = "카테고리별 가게 조회")
     @GetMapping("/category/stores")
-    public ResponseDTO<?> selectCategoryByCategory(@RequestParam("category") Category category) {
+    public ResponseDTO<?> selectCategoryByCategory(@RequestParam("category") Category category,Authentication authentication){
         CategoryDTO categoryDTO = CategoryDTO.builder()
                 .category(category)
                 .category_ko(category.label())
                 .build();
-        return new ResponseDTO<>(HttpStatus.OK.value(), storeService.selectCategory(categoryDTO));
+        return new ResponseDTO<>(HttpStatus.OK.value(), storeService.selectCategory(categoryDTO, authentication));
     }
 
 

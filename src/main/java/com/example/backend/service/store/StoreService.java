@@ -4,10 +4,12 @@ import com.example.backend.dto.store.*;
 import com.example.backend.entity.store.Store;
 import com.example.backend.entity.store.StoreAddress;
 import com.example.backend.entity.userAccount.UserAccount;
+import com.example.backend.entity.userAccount.UserAddress;
 import com.example.backend.entity.userAccount.UserRole;
 import com.example.backend.exception.store.AlreadyStoreBossAssignException;
 import com.example.backend.exception.store.StoreNotFoundException;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
+import com.example.backend.repository.UserAccount.UserAddressRepository;
 import com.example.backend.repository.store.StoreAddressRepository;
 import com.example.backend.repository.store.StoreRepository;
 import com.example.backend.service.aws.AwsS3Service;
@@ -34,6 +36,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final AwsS3Service s3Service;
     private final StoreAddressRepository storeAddressRepository;
+    private final UserAddressRepository userAddressRepository;
 
     public static StoreSearchResponseDTO entityToDTO(Store s){
         return StoreSearchResponseDTO.builder()
@@ -100,13 +103,25 @@ public class StoreService {
         return storeOptional.map(StoreDTO::entityToDTO);
     }
 
-    public Page<StoreDTO> selectAll(Pageable pageable) {
-        return storeRepository.findAll(pageable)
+    public Page<StoreDTO> findStoresWithin5Km(Pageable pageable, Authentication authentication) {
+        String userId = authentication.getName();
+        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
+        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress())
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자 주소를 찾을 수 없습니다: " + userAccount.getAddress()));
+        System.out.println("고객 위도 : " + userAddress.getLatitude());
+        System.out.println("고객 경도 : " + userAddress.getLongitude());
+        return storeRepository.findStoresWithinDistance(userAddress.getLatitude(),userAddress.getLongitude(), 5.0,pageable)
                 .map(StoreDTO::entityToDTO);
     }
 
-    public List<StoreDTO> selectCategory(CategoryDTO categoryDTO) {
-        return storeRepository.findByCategory(categoryDTO.getCategory())
+    public List<StoreDTO> selectCategory(CategoryDTO categoryDTO, Authentication authentication) {
+        String userId = authentication.getName();
+        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
+        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress())
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자 주소를 찾을 수 없습니다: " + userAccount.getAddress()));
+        return storeRepository.findStoresWithinDistanceAndCategory(userAddress.getLatitude(),userAddress.getLongitude(), 5.0,categoryDTO.getCategory())
                 .stream()
                 .map(StoreDTO::entityToDTO)
                 .collect(Collectors.toList());
