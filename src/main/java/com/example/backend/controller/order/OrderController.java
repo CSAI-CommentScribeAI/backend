@@ -74,6 +74,12 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserOrders(@PathVariable Long userId) {
+        List<OrderDTO> orders = orderService.getUserOrders(userId);
+        return ResponseEntity.ok(orders);
+    }
+
 
     @PostMapping("/place/{orderId}")
     @Transactional

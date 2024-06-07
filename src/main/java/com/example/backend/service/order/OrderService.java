@@ -20,4 +20,6 @@ public interface OrderService {
     OrderDTO deliveryOrder(Long orderId);
 
     List<OrderDTO> getStoreOrders(Long storeId);
+
+    List<OrderDTO> getUserOrders(Long userId);
 }
