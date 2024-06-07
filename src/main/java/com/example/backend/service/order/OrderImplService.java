@@ -12,7 +12,6 @@ import com.example.backend.repository.UserAccount.UserAccountRepository;
 import com.example.backend.repository.cart.CartRepository;
 import com.example.backend.repository.menu.MenuRepository;
 import com.example.backend.repository.order.OrderRepository;
-import com.example.backend.repository.store.StoreRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
