@@ -112,7 +112,7 @@ public class OrderImplService implements OrderService {
 
     @Override
     public List<OrderDTO> getUserOrders(Long userId) {
-        List<Order> orders = orderRepository.findByUserId(userId);
+        List<Order> orders = orderRepository.findByUserAccountId(userId);
         return Optional.ofNullable(orders).orElse(Collections.emptyList())
                 .stream()
                 .map(this::toOrderDTO)
