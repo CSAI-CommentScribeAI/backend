@@ -151,6 +151,8 @@ public class OrderImplService implements OrderService {
                 .orderMenus(order.getOrderMenus().stream()
                         .map(this::toOrderMenuDTO)
                         .collect(Collectors.toList()))
+                .userAddress(order.getUserAddress())
+                .createdAt(order.getCreatedTime())
                 .build();
     }
 
