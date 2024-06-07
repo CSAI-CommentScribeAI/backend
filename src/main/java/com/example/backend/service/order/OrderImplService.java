@@ -9,6 +9,8 @@ import com.example.backend.entity.order.OrderMenu;
 import com.example.backend.entity.order.OrderStatus;
 import com.example.backend.entity.store.Store;
 import com.example.backend.entity.userAccount.UserAccount;
+import com.example.backend.entity.userAccount.UserRole;
+import com.example.backend.exception.store.AlreadyStoreBossAssignException;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
 import com.example.backend.repository.cart.CartRepository;
 import com.example.backend.repository.menu.MenuRepository;
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.example.backend.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -109,7 +113,15 @@ public class OrderImplService implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getStoreOrders(Long storeId) {
+    public List<OrderDTO> getStoreOrders(Authentication authentication,Long storeId) {
+        String userId = authentication.getName();
+
+        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
+
+        if (userAccount.getUserRole() != UserRole.ROLE_OWNER) {
+            throw new AlreadyStoreBossAssignException();
+        }
         List<Order> orders = orderRepository.findByStoreId(storeId);
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalStateException("ID에 해당하는 가게를 찾을 수 없습니다: " + storeId));
@@ -120,8 +132,16 @@ public class OrderImplService implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getUserOrders(Long userId) {
-        List<Order> orders = orderRepository.findByUserAccountId(userId);
+    public List<OrderDTO> getUserOrders(Authentication authentication) {
+        String userId = authentication.getName();
+
+        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
+
+        if (userAccount.getUserRole() != UserRole.ROLE_USER) {
+            throw new AlreadyStoreBossAssignException();
+        }
+        List<Order> orders = orderRepository.findByUserAccountId(Long.valueOf(userId));
 
         // storeIds 추출
         List<Long> storeIds = orders.stream()
