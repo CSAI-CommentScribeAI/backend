@@ -17,6 +17,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     int countByUserIdAndStoreId(@Param("userId") Long userId, @Param("storeId") Long storeId);
 
     List<Order> findByStoreId(Long storeId);
+
+    List<Order> findByUserId(Long userId);
 }
 
 

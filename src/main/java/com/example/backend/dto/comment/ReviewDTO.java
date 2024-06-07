@@ -16,5 +16,5 @@ public class ReviewDTO {
     private String comment;
     private Long userId;
     private Long storeId;
-    private List<ReplyRequestDTO> replies;
+    private List<ReplyResponseDTO> replies;
 }

@@ -111,6 +111,16 @@ public class OrderImplService implements OrderService {
     }
 
     @Override
+    public List<OrderDTO> getUserOrders(Long userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return Optional.ofNullable(orders).orElse(Collections.emptyList())
+                .stream()
+                .map(this::toOrderDTO)
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
     public Order getOrderById(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Invalid order ID"));
     }
