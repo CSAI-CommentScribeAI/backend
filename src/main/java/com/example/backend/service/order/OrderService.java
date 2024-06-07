@@ -19,7 +19,7 @@ public interface OrderService {
 
     OrderDTO deliveryOrder(Long orderId);
 
-    List<OrderDTO> getStoreOrders(Long storeId);
+    List<OrderDTO> getStoreOrders(Authentication authentication,Long storeId);
 
-    List<OrderDTO> getUserOrders(Long userId);
+    List<OrderDTO> getUserOrders(Authentication authentication);
 }

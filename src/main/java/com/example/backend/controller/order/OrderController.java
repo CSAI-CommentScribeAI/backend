@@ -56,7 +56,7 @@ public class OrderController {
 
     @Autowired
     private RestTemplate template;
-  
+
     @PostMapping("/")
     public ResponseEntity<OrderDTO> createOrderFromCart(@RequestBody OrderDTO orderDTO, Authentication authentication) {
         OrderDTO orderSaveDTO = orderService.createOrderFromCart(authentication, orderDTO);
@@ -69,14 +69,14 @@ public class OrderController {
 
 
     @GetMapping("/{storeId}")
-    public ResponseEntity<?> getStoreOrders(@PathVariable Long storeId) {
-        List<OrderDTO> orders = orderService.getStoreOrders(storeId);
+    public ResponseEntity<?> getStoreOrders(Authentication authentication,@PathVariable Long storeId) {
+        List<OrderDTO> orders = orderService.getStoreOrders(authentication,storeId);
         return ResponseEntity.ok(orders);
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getUserOrders(@PathVariable Long userId) {
-        List<OrderDTO> orders = orderService.getUserOrders(userId);
+    @GetMapping("/user/")
+    public ResponseEntity<?> getUserOrders(Authentication authentication) {
+        List<OrderDTO> orders = orderService.getUserOrders(authentication);
         return ResponseEntity.ok(orders);
     }
 
