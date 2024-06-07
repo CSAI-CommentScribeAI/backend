@@ -3,6 +3,7 @@ package com.example.backend.entity.openAI;
 import com.example.backend.entity.comment.Review;
 import com.example.backend.entity.order.Order;
 import com.example.backend.entity.store.Store;
+import com.example.backend.entity.userAccount.UserAccount;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,4 +46,5 @@ public class ReplySave {
     private float sentimentScore;
     private String sentimentLabel;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

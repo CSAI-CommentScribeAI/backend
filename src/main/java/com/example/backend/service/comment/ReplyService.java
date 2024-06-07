@@ -1,19 +1,20 @@
 package com.example.backend.service.comment;
 
-import com.example.backend.dto.comment.ReplyDTO;
+import com.example.backend.dto.comment.ReplyRequestDTO;
+import com.example.backend.dto.comment.ReplyResponseDTO;
 import java.util.List;
 import org.springframework.security.core.Authentication;
 
 public interface ReplyService {
-    ReplyDTO createReply(Authentication authentication, ReplyDTO replyDTO, int reviewId);
+    ReplyResponseDTO createReply(Authentication authentication, ReplyRequestDTO replyRequestDTO, int reviewId);
     
-    ReplyDTO updateReply(Authentication authentication, int replyId, ReplyDTO replyDTO);
+    ReplyResponseDTO updateReply(Authentication authentication, int replyId, ReplyRequestDTO replyRequestDTO);
     
     void deleteReply(Authentication authentication, int replyId);
 
-    List<ReplyDTO> getReplyListByStoreId(int storeId);
+    List<ReplyResponseDTO> getReplyListByStoreId(int storeId);
 
-    List<ReplyDTO> getReplyList(int userId);
+    List<ReplyResponseDTO> getReplyList(int userId);
 
     String createReplyByAI(Authentication authentication, int reviewId);
 }

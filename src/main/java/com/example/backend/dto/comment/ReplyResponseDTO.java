@@ -1,6 +1,5 @@
 package com.example.backend.dto.comment;
 
-import java.security.Timestamp;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReplyDTO {
+public class ReplyResponseDTO {
     private Long id;  // 리뷰의 고유 ID
     private String comment;  // 리뷰 내용
     private LocalDateTime createAt;  // 리뷰 작성 시간

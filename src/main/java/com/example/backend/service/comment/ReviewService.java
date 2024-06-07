@@ -1,6 +1,6 @@
 package com.example.backend.service.comment;
 
-import com.example.backend.dto.comment.ReplyDTO;
+import com.example.backend.dto.comment.ReplyRequestDTO;
 import com.example.backend.dto.comment.ReviewDTO;
 import com.example.backend.dto.comment.ReviewRequestDTO;
 import com.example.backend.dto.userAccount.UserAccountRequestDTO;
@@ -158,8 +158,8 @@ public class ReviewService {
                 .build();
     }
 
-    private ReplyDTO toReplyDTO(Reply reply) {
-        return ReplyDTO.builder()
+    private ReplyRequestDTO toReplyDTO(Reply reply) {
+        return ReplyRequestDTO.builder()
                 .id(reply.getId())
                 .comment(reply.getComment())
                 .createAt(reply.getCreateAt())
