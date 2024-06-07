@@ -16,6 +16,7 @@ import com.example.backend.repository.order.OrderRepository;
 import com.example.backend.repository.store.StoreRepository;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -122,13 +123,25 @@ public class OrderImplService implements OrderService {
     @Override
     public List<OrderDTO> getUserOrders(Long userId) {
         List<Order> orders = orderRepository.findByUserAccountId(userId);
-        Store store = storeRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 가게를 찾을 수 없습니다: " + userId));
-        return Optional.ofNullable(orders).orElse(Collections.emptyList())
-                .stream()
-                .map(order -> toOrderDTO(order, store))
+
+        // storeIds 추출
+        List<Long> storeIds = orders.stream()
+                .map(Order::getStoreId)
+                .distinct()
                 .collect(Collectors.toList());
 
+        // storeIds를 사용하여 stores 조회
+        List<Store> stores = storeRepository.findAllById(storeIds);
+
+        // Store 목록을 Map으로 변환하여 빠른 조회 가능하도록 설정
+        Map<Long, Store> storeMap = stores.stream()
+                .collect(Collectors.toMap(Store::getId, store -> store));
+
+        // Order를 OrderDTO로 변환
+        return Optional.ofNullable(orders).orElse(Collections.emptyList())
+                .stream()
+                .map(order -> toOrderDTO(order, storeMap.get(order.getStoreId())))
+                .collect(Collectors.toList());
     }
 
     @Override
