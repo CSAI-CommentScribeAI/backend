@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @Builder
 public class OrderMenuDTO {
     private Long menuId;
+    private String menuName;
     private String imageUrl;
     private int quantity;
 }

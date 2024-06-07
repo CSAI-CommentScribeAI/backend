@@ -7,6 +7,7 @@ import com.example.backend.entity.menu.Menu;
 import com.example.backend.entity.order.Order;
 import com.example.backend.entity.order.OrderMenu;
 import com.example.backend.entity.order.OrderStatus;
+import com.example.backend.entity.store.Store;
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
 import com.example.backend.repository.cart.CartRepository;
@@ -33,6 +34,7 @@ public class OrderImplService implements OrderService {
     private final MenuRepository menuRepository;
     private final CartRepository cartRepository;
     private final ReviewRepository reviewRepository;
+    private final StoreRepository storeRepository;
 
     @Transactional
     public OrderDTO createOrderFromCart(Authentication authentication, OrderDTO orderDTO) {
@@ -42,6 +44,8 @@ public class OrderImplService implements OrderService {
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
 
+        Store store = storeRepository.findById(orderDTO.getStoreId())
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 가게를 찾을 수 없습니다: " + orderDTO.getStoreId()));
 
         // Order 엔티티 생성 및 설정
         Order order = new Order();
@@ -64,7 +68,7 @@ public class OrderImplService implements OrderService {
 
         cartRepository.deleteByUserId(userAccount.getId());
 
-        OrderDTO orderSaveDTO = toOrderDTO(savedOrder);
+        OrderDTO orderSaveDTO = toOrderDTO(savedOrder,store);
         orderSaveDTO.setOrderId(savedOrder.getId());
         // OrderDTO 반환
         return orderSaveDTO;
@@ -94,28 +98,35 @@ public class OrderImplService implements OrderService {
 
         order.setOrderStatus(OrderStatus.DELIVERED);
 
+        Store store = storeRepository.findById(order.getStoreId())
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 가게를 찾을 수 없습니다: " + order.getStoreId()));
+
         Order savedOrder = orderRepository.save(order);
         if (savedOrder == null) {
             throw new RuntimeException("Error placing order.");
         }
-        return toOrderDTO(savedOrder);
+        return toOrderDTO(savedOrder,store);
     }
 
     @Override
     public List<OrderDTO> getStoreOrders(Long storeId) {
         List<Order> orders = orderRepository.findByStoreId(storeId);
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 가게를 찾을 수 없습니다: " + storeId));
         return Optional.ofNullable(orders).orElse(Collections.emptyList())
                 .stream()
-                .map(this::toOrderDTO)
+                .map(order -> toOrderDTO(order, store))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<OrderDTO> getUserOrders(Long userId) {
         List<Order> orders = orderRepository.findByUserAccountId(userId);
+        Store store = storeRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 가게를 찾을 수 없습니다: " + userId));
         return Optional.ofNullable(orders).orElse(Collections.emptyList())
                 .stream()
-                .map(this::toOrderDTO)
+                .map(order -> toOrderDTO(order, store))
                 .collect(Collectors.toList());
 
     }
@@ -151,11 +162,13 @@ public class OrderImplService implements OrderService {
                 .build();
     }
 
-    private OrderDTO toOrderDTO(Order order) {
+    private OrderDTO toOrderDTO(Order order, Store store) {
         return OrderDTO.builder()
                 .orderId(order.getId())
                 .orderStatus(order.getOrderStatus())
                 .storeId(order.getStoreId())
+                .storeName(store.getName())
+                .storeImageUrl(store.getStoreImageUrl())
                 .totalPrice(order.getTotalPrice())
                 .userId(order.getUserAccount().getId())
                 .orderMenus(order.getOrderMenus().stream()
@@ -170,6 +183,7 @@ public class OrderImplService implements OrderService {
         return OrderMenuDTO.builder()
                 .menuId(orderMenu.getMenu().getId())
                 .imageUrl(orderMenu.getImageUrl())
+                .menuName(orderMenu.getMenuName())
                 .quantity(orderMenu.getQuantity())
                 .build();
     }

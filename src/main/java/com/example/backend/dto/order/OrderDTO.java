@@ -23,6 +23,8 @@ public class OrderDTO {
     private Long orderId;
     private OrderStatus orderStatus;
     private Long storeId;
+    private String storeName;
+    private String storeImageUrl;
     private int totalPrice;
     private Long userId;
     private List<OrderMenuDTO> orderMenus;
