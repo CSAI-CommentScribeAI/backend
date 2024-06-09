@@ -25,7 +25,7 @@ public class Reply {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;  // 리뷰의 고유 ID
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String comment;  // 리뷰 내용
 
     @Column(nullable = false)
