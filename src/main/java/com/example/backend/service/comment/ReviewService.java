@@ -145,6 +145,7 @@ public class ReviewService {
                 .rating(review.getRating())
                 .comment(review.getComment())
                 .userId(review.getUserAccount().getId())
+                .nickName(review.getUserAccount().getNickname())
                 .storeId(review.getStore().getId())
                 .replies(review.getReplies() == null ? new ArrayList<>() : review.getReplies().stream()
                         .map(this::toReplyDTO)

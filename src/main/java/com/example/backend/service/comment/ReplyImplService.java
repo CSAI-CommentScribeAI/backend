@@ -78,6 +78,7 @@ public class ReplyImplService implements ReplyService{
                 .updateAt(replySave.getUpdateAt())
                 .deleteAt(replySave.getDeleteAt())
                 .userId(replySave.getUserAccount().getId())
+                .nickName(replySave.getUserAccount().getNickname())
                 .reviewId(replySave.getReview().getId())
                 .build();
 
@@ -108,6 +109,7 @@ public class ReplyImplService implements ReplyService{
                 .updateAt(replySave.getUpdateAt())
                 .deleteAt(replySave.getDeleteAt())
                 .userId(replySave.getUserAccount().getId())
+                .nickName(replySave.getUserAccount().getNickname())
                 .reviewId(replySave.getReview().getId())
                 .build();
     }
@@ -141,6 +143,7 @@ public class ReplyImplService implements ReplyService{
                         .updateAt(reply.getUpdateAt())
                         .deleteAt(reply.getDeleteAt())
                         .userId(reply.getUserAccount().getId())
+                        .nickName(reply.getUserAccount().getNickname())
                         .reviewId(reply.getReview().getId())
                         .build())
                 .toList();
@@ -158,6 +161,7 @@ public class ReplyImplService implements ReplyService{
                         .updateAt(reply.getUpdateAt())
                         .deleteAt(reply.getDeleteAt())
                         .userId(reply.getUserAccount().getId())
+                        .nickName(reply.getUserAccount().getNickname())
                         .reviewId(reply.getReview().getId())
                         .build())
                 .toList();
