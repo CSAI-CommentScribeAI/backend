@@ -2,8 +2,10 @@ package com.example.backend.controller.menu;
 
 import com.example.backend.dto.ResponseDTO;
 import com.example.backend.dto.menu.MenuInsertDTO;
+import com.example.backend.dto.menu.MenuListDTO;
 import com.example.backend.dto.menu.MenuUpdateDTO;
 import com.example.backend.service.menu.MenuService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -47,5 +49,10 @@ public class MenuController {
                                      @PathVariable Long storeId,
                                      @PathVariable Long menuId) {
         return new ResponseDTO<>(HttpStatus.OK.value(), menuService.deleteMenu(authentication, storeId, menuId));
+    }
+
+    @PutMapping("/menu_list")
+    public ResponseDTO<?> createMenuList(@RequestBody List<MenuListDTO> menuListDTO) {
+        return new ResponseDTO<>(HttpStatus.OK.value(), menuService.createMenuList(menuListDTO));
     }
 }
