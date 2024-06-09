@@ -15,7 +15,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class StoreListDTO {
     private String name; // 매장명
     private int minOrderPrice; // 최소 주문금액
-    private String storeUrl; // 배경 이미지
     private Category category;
     private String info;
     private String businessLicense; // 사업자 등록증

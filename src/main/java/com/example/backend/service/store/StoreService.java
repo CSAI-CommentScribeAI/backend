@@ -215,13 +215,29 @@ public class StoreService {
                         .userAccount(userAccount)
                         .name(storeDTO.getName())
                         .minOrderPrice(storeDTO.getMinOrderPrice())
-                        .storeImageUrl(storeDTO.getStoreUrl())
+                        .storeImageUrl(null)
                         .category(storeDTO.getCategory())
                         .info(storeDTO.getInfo())
                         .build())
                 .collect(Collectors.toList());
 
         storeRepository.saveAll(stores);
+
+        // Store 엔티티의 ID를 사용하여 StoreAddress를 생성하여 저장
+        List<StoreAddress> storeAddress = storeListDTO.stream()
+                .map(storeDTO -> StoreAddress.builder()
+                        .fullAddress(storeDTO.getFullAddress())
+                        .roadAddress(storeDTO.getRoadAddress())
+                        .jibunAddress(storeDTO.getJibunAddress())
+                        .postalCode(storeDTO.getPostalCode())
+                        .latitude(storeDTO.getLatitude())
+                        .longitude(storeDTO.getLongitude())
+                        .store(stores.get(0)) // Store 엔티티와 연결
+                        .build())
+                .collect(Collectors.toList());
+
+        // StoreAddress 엔티티를 저장
+        storeAddress = storeAddressRepository.saveAll(storeAddress);
 
         return stores.stream()
                 .map(StoreDTO::entityToDTO)
