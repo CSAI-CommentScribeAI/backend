@@ -17,5 +17,6 @@ public class ReviewDTO {
     private String nickName;
     private Long userId;
     private Long storeId;
+    private List<String> menuList;
     private List<ReplyResponseDTO> replies;
 }

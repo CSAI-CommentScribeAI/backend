@@ -1,6 +1,5 @@
 package com.example.backend.service.comment;
 
-import com.example.backend.dto.comment.ReplyRequestDTO;
 import com.example.backend.dto.comment.ReplyResponseDTO;
 import com.example.backend.dto.comment.ReviewDTO;
 import com.example.backend.dto.comment.ReviewRequestDTO;
@@ -72,6 +71,7 @@ public class ReviewService {
 
         reviewRepository.save(review);
 
+
         return toReviewDTO(review);
     }
 
@@ -140,12 +140,17 @@ public class ReviewService {
     }
 
     private ReviewDTO toReviewDTO(Review review) {
+        Order order = review.getOrder();
+        List<String> menuList = order.getOrderMenus().stream()
+                .map(orderMenu -> orderMenu.getMenu().getName())
+                .toList();
         return ReviewDTO.builder()
                 .orderId(review.getOrder().getId())
                 .rating(review.getRating())
                 .comment(review.getComment())
                 .userId(review.getUserAccount().getId())
                 .nickName(review.getUserAccount().getNickname())
+                .menuList(menuList)
                 .storeId(review.getStore().getId())
                 .replies(review.getReplies() == null ? new ArrayList<>() : review.getReplies().stream()
                         .map(this::toReplyDTO)
