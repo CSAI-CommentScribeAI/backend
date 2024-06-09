@@ -14,6 +14,7 @@ public class ReviewDTO {
     private Long orderId;
     private float rating;
     private String comment;
+    private String nickName;
     private Long userId;
     private Long storeId;
     private List<ReplyResponseDTO> replies;
