@@ -203,4 +203,28 @@ public class StoreService {
                 .map(StoreOwnerDTO::entityToDTO)
                 .collect(Collectors.toList());
     }
+
+    public Object createStoreList(Authentication authentication, List<StoreListDTO> storeListDTO) {
+        String userId = authentication.getName();
+        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
+
+
+        List<Store> stores = storeListDTO.stream()
+                .map(storeDTO -> Store.builder()
+                        .userAccount(userAccount)
+                        .name(storeDTO.getName())
+                        .minOrderPrice(storeDTO.getMinOrderPrice())
+                        .storeImageUrl(storeDTO.getStoreUrl())
+                        .category(storeDTO.getCategory())
+                        .info(storeDTO.getInfo())
+                        .build())
+                .collect(Collectors.toList());
+
+        storeRepository.saveAll(stores);
+
+        return stores.stream()
+                .map(StoreDTO::entityToDTO)
+                .collect(Collectors.toList());
+    }
 }
