@@ -49,4 +49,13 @@ public class StoreDTO {
                 .menus(s.getMenus().stream().map(MenuDTO::entityToDTO).collect(Collectors.toList()))
                 .build();
     }
+
+    public StoreDTO(Store store) {
+        this.id = store.getId();
+        this.name = store.getName();
+        this.minOrderPrice = store.getMinOrderPrice();
+        this.category = store.getCategory();
+        this.info = store.getInfo();
+    }
+
 }

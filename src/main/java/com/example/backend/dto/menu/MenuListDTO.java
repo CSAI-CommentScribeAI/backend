@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class MenuListDTO {
     private Long storeId;
     private String name;
-    private String imageUrl;
+    private String menuUrl;
     private int price;
     private String menuDetail;
 

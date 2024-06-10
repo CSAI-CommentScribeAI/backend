@@ -111,7 +111,7 @@ public class MenuService {
 
     public Object createMenuList(List<MenuListDTO> menuListDTO) {
         List<Menu> menus = menuListDTO.stream()
-                .map(this::dtoToEntity)
+                .map(this::listDtoToEntity)
                 .toList();
         List<Menu> menusSave = menuRepository.saveAll(menus);
 
@@ -120,16 +120,16 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
-    public Menu dtoToEntity(MenuListDTO menuListDTO) {
+
+    public Menu listDtoToEntity(MenuListDTO menuListDTO){
         Store store = storeRepository.findById(menuListDTO.getStoreId())
                 .orElseThrow(StoreNotFoundException::new);
         return Menu.builder()
-                .id(null)
                 .store(store)
                 .name(menuListDTO.getName())
-                .imageUrl(menuListDTO.getImageUrl())
                 .price(menuListDTO.getPrice())
                 .menuDetail(menuListDTO.getMenuDetail())
+                .imageUrl(menuListDTO.getMenuUrl())
                 .status(MenuStatus.SALE)
                 .build();
     }

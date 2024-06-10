@@ -9,6 +9,7 @@ public enum OrderStatus {
     DELIVERED,   // 배달 완료
     CANCEL;      // 취소
 
+
     @JsonCreator
     public static OrderStatus from(String s){
         return OrderStatus.valueOf(s.toUpperCase());

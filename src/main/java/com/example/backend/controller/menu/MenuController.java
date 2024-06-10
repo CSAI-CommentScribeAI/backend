@@ -51,7 +51,7 @@ public class MenuController {
         return new ResponseDTO<>(HttpStatus.OK.value(), menuService.deleteMenu(authentication, storeId, menuId));
     }
 
-    @PutMapping("/menu_list")
+    @PostMapping("/menu_list")
     public ResponseDTO<?> createMenuList(@RequestBody List<MenuListDTO> menuListDTO) {
         return new ResponseDTO<>(HttpStatus.OK.value(), menuService.createMenuList(menuListDTO));
     }
