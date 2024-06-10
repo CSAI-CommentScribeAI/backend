@@ -24,6 +24,7 @@ public class Menu extends TimeZone {
     private Store store;
 
     private String name;
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
     private int price;
     private String menuDetail;

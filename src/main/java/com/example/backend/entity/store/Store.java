@@ -23,7 +23,7 @@ import java.util.List;
 public class Store extends TimeZone {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_id")
     private Long id;
 
@@ -43,8 +43,9 @@ public class Store extends TimeZone {
     @JoinColumn(name = "store_address_id", referencedColumnName = "id") // StoreAddress 테이블의 id를 참조합니다.
     private StoreAddress storeAddress; // store 거리 정보
 
-    @Column(length = 10, unique = true) // 고유값으로 설정
-    private int businessLicense; // 사업자 등록증
+    @Getter
+    @Column // 고유값으로 설정
+    private String businessLicense; // 사업자 등록증
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id") // 외래 키 제약 조건 추가
@@ -65,10 +66,6 @@ public class Store extends TimeZone {
 
     @Column(name = "close_time")
     private LocalTime closeTime;
-
-    public int getBusinessLicense() {
-        return this.businessLicense;
-    }
 
     // 메뉴 삭제
     public void removeMenu() {

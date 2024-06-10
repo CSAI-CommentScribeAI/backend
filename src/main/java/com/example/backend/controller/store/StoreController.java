@@ -113,4 +113,9 @@ public class StoreController {
         }
         return storeService.findStoresByOwner(authentication);
     }
+
+    @PostMapping("/store_list")
+    public ResponseDTO<?> createStoreList(Authentication authentication,@RequestBody List<StoreListDTO> storeListDTO) {
+        return new ResponseDTO<>(HttpStatus.OK.value(), storeService.createStoreList(authentication,storeListDTO));
+    }
 }

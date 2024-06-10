@@ -1,6 +1,9 @@
 package com.example.backend.service.store;
 
+import com.example.backend.dto.menu.MenuListDTO;
 import com.example.backend.dto.store.*;
+import com.example.backend.entity.menu.Menu;
+import com.example.backend.entity.menu.MenuStatus;
 import com.example.backend.entity.store.Store;
 import com.example.backend.entity.store.StoreAddress;
 import com.example.backend.entity.userAccount.UserAccount;
@@ -13,6 +16,7 @@ import com.example.backend.repository.UserAccount.UserAddressRepository;
 import com.example.backend.repository.store.StoreAddressRepository;
 import com.example.backend.repository.store.StoreRepository;
 import com.example.backend.service.aws.AwsS3Service;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,7 +33,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class StoreService {
 
     private final UserAccountRepository userAccountRepository;
@@ -66,7 +70,7 @@ public class StoreService {
                 .storeImageUrl(imgPath)
                 .category(storeDTO.getCategory())
                 .info(storeDTO.getInfo())
-                .businessLicense(Integer.parseInt((storeDTO.getBusinessLicense())))
+                .businessLicense(storeDTO.getBusinessLicense())
                 .openTime(storeDTO.getOpenTime())
                 .closeTime(storeDTO.getCloseTime())
                 .userAccount(userAccount)
@@ -203,4 +207,59 @@ public class StoreService {
                 .map(StoreOwnerDTO::entityToDTO)
                 .collect(Collectors.toList());
     }
+
+    public Object createStoreList(Authentication authentication, List<StoreListDTO> storeListDTO) {
+        String userId = authentication.getName();
+        UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
+
+        List<Store> stores = storeListDTO.stream()
+                .map(storeDTO -> Store.builder()
+                        .id(null)
+                        .userAccount(userAccount)
+                        .name(storeDTO.getName())
+                        .minOrderPrice(storeDTO.getMinOrderPrice())
+                        .storeImageUrl(null)
+                        .category(storeDTO.getCategory())
+                        .info(storeDTO.getInfo())
+                        .openTime(storeDTO.getOpenTime())
+                        .closeTime(storeDTO.getCloseTime())
+                        .businessLicense(storeDTO.getBusinessLicense())
+                        .build())
+                .collect(Collectors.toList());
+
+        stores = storeRepository.saveAll(stores);
+
+        List<StoreAddress> storeAddresses = new ArrayList<>();
+        for (int i = 0; i < storeListDTO.size(); i++) {
+            Store store = stores.get(i);
+            StoreListDTO storeDTO = storeListDTO.get(i);
+            if (storeDTO.getRoadAddress() == null) {
+                throw new IllegalArgumentException("Road address cannot be null for store: " + storeDTO.getName());
+            }
+            StoreAddress storeAddress = StoreAddress.builder()
+                    .fullAddress(storeDTO.getFullAddress())
+                    .roadAddress(storeDTO.getRoadAddress())
+                    .jibunAddress(storeDTO.getJibunAddress())
+                    .postalCode(storeDTO.getPostalCode())
+                    .latitude(storeDTO.getLatitude())
+                    .longitude(storeDTO.getLongitude())
+                    .store(store)
+                    .build();
+            storeAddresses.add(storeAddress);
+            // Store 엔티티에 StoreAddress의 ID를 설정하여 매핑
+            store.setStoreAddress(storeAddress);
+
+        }
+
+        storeAddressRepository.saveAll(storeAddresses);
+
+        return stores.stream()
+                .map(StoreDTO::new)
+                .collect(Collectors.toList()); // 반환 타입에 맞게 수정
+    }
+
+
+
+
 }

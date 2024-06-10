@@ -2,9 +2,11 @@ package com.example.backend.service.menu;
 
 import com.example.backend.dto.menu.MenuDTO;
 import com.example.backend.dto.menu.MenuInsertDTO;
+import com.example.backend.dto.menu.MenuListDTO;
 import com.example.backend.dto.menu.MenuUpdateDTO;
 import com.example.backend.dto.store.StoreDTO;
 import com.example.backend.entity.menu.Menu;
+import com.example.backend.entity.menu.MenuStatus;
 import com.example.backend.entity.store.Store;
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.exception.menu.MenuNotFoundException;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class MenuService {
 
     private final MenuRepository menuRepository;
@@ -105,5 +107,30 @@ public class MenuService {
         return menus.stream()
                 .map(MenuDTO::entityToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public Object createMenuList(List<MenuListDTO> menuListDTO) {
+        List<Menu> menus = menuListDTO.stream()
+                .map(this::listDtoToEntity)
+                .toList();
+        List<Menu> menusSave = menuRepository.saveAll(menus);
+
+        return menusSave.stream()
+                .map(MenuDTO::entityToDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    public Menu listDtoToEntity(MenuListDTO menuListDTO){
+        Store store = storeRepository.findById(menuListDTO.getStoreId())
+                .orElseThrow(StoreNotFoundException::new);
+        return Menu.builder()
+                .store(store)
+                .name(menuListDTO.getName())
+                .price(menuListDTO.getPrice())
+                .menuDetail(menuListDTO.getMenuDetail())
+                .imageUrl(menuListDTO.getMenuUrl())
+                .status(MenuStatus.SALE)
+                .build();
     }
 }
