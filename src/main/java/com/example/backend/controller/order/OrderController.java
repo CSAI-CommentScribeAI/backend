@@ -9,8 +9,10 @@ import com.example.backend.entity.comment.Review;
 import com.example.backend.entity.openAI.LetterSave;
 import com.example.backend.entity.order.Order;
 import com.example.backend.entity.order.OrderMenu;
+import com.example.backend.entity.order.OrderStatus;
 import com.example.backend.entity.store.Store;
 import com.example.backend.repository.order.OrderMenuRepository;
+import com.example.backend.repository.order.OrderRepository;
 import com.example.backend.repository.store.StoreRepository;
 import com.example.backend.service.LocationService;
 import com.example.backend.service.openAI.LetterSaveService;
@@ -47,6 +49,7 @@ public class OrderController {
     private final StoreRepository storeRepository;
     private final LetterSaveService letterSaveService;
     private final OrderMenuRepository orderMenuRepository;
+    private final OrderRepository orderRepository;
 
     @Value("${openai.model}")
     private String model;
@@ -157,6 +160,9 @@ public class OrderController {
                 ResponseDTO<String> response = new ResponseDTO<>();
                 response.setStatus(200);
                 response.setData(letter);
+
+                order.setOrderStatus(OrderStatus.DELIVERED);
+                orderRepository.save(order);
 
                 return ResponseEntity.ok(response);
             }
