@@ -15,11 +15,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.Data;
 
+import lombok.*;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Data
-@Table(name = "reply")
+@Table(name = "Reply")
 public class Reply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

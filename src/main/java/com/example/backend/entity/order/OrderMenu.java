@@ -7,12 +7,13 @@ import lombok.*;
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-@Entity
+@Getter
+@Setter
 @Builder
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "order_menu")
+@Entity
+@Table(name = "Order_Menu")
 public class OrderMenu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Better specify strategy for clarity

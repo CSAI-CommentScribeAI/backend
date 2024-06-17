@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-@Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name="Store_Address")
 public class StoreAddress extends TimeZone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

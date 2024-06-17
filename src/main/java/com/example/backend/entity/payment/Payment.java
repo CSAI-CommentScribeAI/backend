@@ -9,13 +9,13 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.format.DateTimeFormatter;
 
-@Entity
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Setter
-@Table
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name="Payment")
 public class Payment extends TimeZone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

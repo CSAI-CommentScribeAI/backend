@@ -11,17 +11,16 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
-@Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ORDERS")
+@Entity
+@Table(name = "Order")
 public class Order extends TimeZone {
     @Id
     @GeneratedValue
-    @Column(name = "order_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
