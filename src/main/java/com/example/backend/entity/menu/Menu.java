@@ -6,17 +6,16 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@EqualsAndHashCode(callSuper = true)
-@Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @ToString(exclude = "store")
 public class Menu extends TimeZone {
 
     @Id @GeneratedValue
-    @Column(name = "menu_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,24 +23,14 @@ public class Menu extends TimeZone {
     private Store store;
 
     private String name;
+
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
+
     private int price;
     private String menuDetail;
+
     @Enumerated(EnumType.STRING)
     private MenuStatus status;
 
-    public void setStore(Store store) {
-        this.store = store;
-        if (!store.getMenus().contains(this)) {
-            store.getMenus().add(this);
-        }
-    }
-
-    public void removeStore() {
-        if (store != null) {
-            store.getMenus().remove(this);
-            store = null;
-        }
-    }
 }

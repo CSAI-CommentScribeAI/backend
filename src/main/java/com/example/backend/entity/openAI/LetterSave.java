@@ -28,9 +28,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "letter_save")
+@Table(name = "Letter_Save")
 public class LetterSave {
-
 
     @Id
     @Column(name = "order_id")

@@ -26,7 +26,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "reply_save")
+@Table(name = "Reply_Save")
 public class ReplySave {
 
     @Id

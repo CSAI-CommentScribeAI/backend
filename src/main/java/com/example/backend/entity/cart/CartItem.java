@@ -1,17 +1,17 @@
 package com.example.backend.entity.cart;
 
 import com.example.backend.entity.menu.Menu;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Entity
-@Data
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name ="cartItem")
+@Entity
+@Table(name ="Cart_Item")
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 ID 생성
