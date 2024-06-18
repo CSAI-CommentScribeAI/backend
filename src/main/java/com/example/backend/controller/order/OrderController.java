@@ -4,9 +4,9 @@ import com.example.backend.dto.ResponseDTO;
 import com.example.backend.dto.openAI.ChatGPTRequestDTO;
 import com.example.backend.dto.openAI.ChatGPTResponseDTO;
 import com.example.backend.dto.openAI.LetterSaveDTO;
-import com.example.backend.dto.order.OrderDTO;
+import com.example.backend.dto.order.OrderRequestDTO;
+import com.example.backend.dto.order.OrderResponseDTO;
 import com.example.backend.entity.comment.Review;
-import com.example.backend.entity.openAI.LetterSave;
 import com.example.backend.entity.order.Order;
 import com.example.backend.entity.order.OrderMenu;
 import com.example.backend.entity.order.OrderStatus;
@@ -61,8 +61,8 @@ public class OrderController {
     private RestTemplate template;
 
     @PostMapping("/")
-    public ResponseEntity<OrderDTO> createOrderFromCart(@RequestBody OrderDTO orderDTO, Authentication authentication) {
-        OrderDTO orderSaveDTO = orderService.createOrderFromCart(authentication, orderDTO);
+    public ResponseEntity<OrderResponseDTO> createOrderFromCart(@RequestBody OrderRequestDTO orderRequestDTO, Authentication authentication) {
+        OrderResponseDTO orderSaveDTO = orderService.createOrderFromCart(authentication, orderRequestDTO);
         if (orderSaveDTO != null) {
             return ResponseEntity.ok(orderSaveDTO);
         } else {
@@ -73,13 +73,13 @@ public class OrderController {
 
     @GetMapping("/{storeId}")
     public ResponseEntity<?> getStoreOrders(Authentication authentication,@PathVariable Long storeId) {
-        List<OrderDTO> orders = orderService.getStoreOrders(authentication,storeId);
+        List<OrderResponseDTO> orders = orderService.getStoreOrders(authentication,storeId);
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/user/")
     public ResponseEntity<?> getUserOrders(Authentication authentication) {
-        List<OrderDTO> orders = orderService.getUserOrders(authentication);
+        List<OrderResponseDTO> orders = orderService.getUserOrders(authentication);
         return ResponseEntity.ok(orders);
     }
 
@@ -189,8 +189,8 @@ public class OrderController {
 
     @PutMapping("/delivery/{orderId}")
     public ResponseEntity<?> deliveryOrder(@PathVariable Long orderId) {
-        OrderDTO orderDTO = orderService.deliveryOrder(orderId);
-        return ResponseEntity.ok(orderDTO);
+        OrderResponseDTO orderResponseDTO = orderService.deliveryOrder(orderId);
+        return ResponseEntity.ok(orderResponseDTO);
     }
 
 }

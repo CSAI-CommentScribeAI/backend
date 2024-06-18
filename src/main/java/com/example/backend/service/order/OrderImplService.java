@@ -1,6 +1,7 @@
 package com.example.backend.service.order;
 
-import com.example.backend.dto.order.OrderDTO;
+import com.example.backend.dto.order.OrderRequestDTO;
+import com.example.backend.dto.order.OrderResponseDTO;
 import com.example.backend.dto.order.OrderMenuDTO;
 import com.example.backend.entity.comment.Review;
 import com.example.backend.entity.menu.Menu;
@@ -41,26 +42,26 @@ public class OrderImplService implements OrderService {
     private final StoreRepository storeRepository;
 
     @Transactional
-    public OrderDTO createOrderFromCart(Authentication authentication, OrderDTO orderDTO) {
+    public OrderResponseDTO createOrderFromCart(Authentication authentication, OrderRequestDTO orderRequestDTO) {
         String userId = authentication.getName();
 
         // 사용자 계정을 데이터베이스에서 조회합니다.
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new IllegalStateException("ID에 해당하는 사용자를 찾을 수 없습니다: " + userId));
 
-        Store store = storeRepository.findById(orderDTO.getStoreId())
-                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 가게를 찾을 수 없습니다: " + orderDTO.getStoreId()));
+        Store store = storeRepository.findById(orderRequestDTO.getStoreId())
+                .orElseThrow(() -> new IllegalStateException("ID에 해당하는 가게를 찾을 수 없습니다: " + orderRequestDTO.getStoreId()));
 
         // Order 엔티티 생성 및 설정
         Order order = new Order();
         order.setOrderStatus(OrderStatus.REQUEST);
-        order.setStoreId(orderDTO.getStoreId());
-        order.setTotalPrice(orderDTO.getTotalPrice());
+        order.setStoreId(orderRequestDTO.getStoreId());
+        order.setTotalPrice(orderRequestDTO.getTotalPrice());
         order.setUserAccount(userAccount);
-        order.setUserAddress(orderDTO.getUserAddress());
+        order.setUserAddress(orderRequestDTO.getUserAddress());
 
         // OrderMenu 엔티티 리스트 생성 및 설정
-        List<OrderMenu> orderMenus = orderDTO.getOrderMenus().stream()
+        List<OrderMenu> orderMenus = orderRequestDTO.getOrderMenus().stream()
                 .map(orderMenuDTO -> toOrderMenuEntity(orderMenuDTO, order))
                 .collect(Collectors.toList());
 
@@ -72,7 +73,7 @@ public class OrderImplService implements OrderService {
 
         cartRepository.deleteByUserId(userAccount.getId());
 
-        OrderDTO orderSaveDTO = toOrderDTO(savedOrder,store);
+        OrderResponseDTO orderSaveDTO = toOrderDTO(savedOrder,store);
         orderSaveDTO.setOrderId(savedOrder.getId());
         // OrderDTO 반환
         return orderSaveDTO;
@@ -96,7 +97,7 @@ public class OrderImplService implements OrderService {
     }
 
     @Override
-    public OrderDTO deliveryOrder(Long orderId) {
+    public OrderResponseDTO deliveryOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found with orderId: " + orderId));
 
@@ -113,7 +114,7 @@ public class OrderImplService implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getStoreOrders(Authentication authentication,Long storeId) {
+    public List<OrderResponseDTO> getStoreOrders(Authentication authentication, Long storeId) {
         String userId = authentication.getName();
 
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
@@ -132,7 +133,7 @@ public class OrderImplService implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getUserOrders(Authentication authentication) {
+    public List<OrderResponseDTO> getUserOrders(Authentication authentication) {
         String userId = authentication.getName();
 
         UserAccount userAccount = userAccountRepository.findById(Long.valueOf(userId))
@@ -194,8 +195,8 @@ public class OrderImplService implements OrderService {
                 .build();
     }
 
-    private OrderDTO toOrderDTO(Order order, Store store) {
-        return OrderDTO.builder()
+    private OrderResponseDTO toOrderDTO(Order order, Store store) {
+        return OrderResponseDTO.builder()
                 .orderId(order.getId())
                 .orderStatus(order.getOrderStatus())
                 .storeId(order.getStoreId())
