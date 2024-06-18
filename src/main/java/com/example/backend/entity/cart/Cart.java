@@ -26,6 +26,7 @@ public class Cart {
     private Long storeId;
     private String storeName;
 
+    @Builder.Default
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();  // 리스트 초기화
 

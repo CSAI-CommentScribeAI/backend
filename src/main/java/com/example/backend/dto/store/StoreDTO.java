@@ -1,6 +1,6 @@
 package com.example.backend.dto.store;
 
-import com.example.backend.dto.menu.MenuDTO;
+import com.example.backend.dto.menu.MenuResponseDTO;
 import com.example.backend.entity.store.Category;
 import com.example.backend.entity.store.Store;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,7 +32,7 @@ public class StoreDTO {
     private LocalTime closeTime; // 마감 시간
     @JsonIgnore // 메뉴 목록을 JSON 응답에서 숨깁니다.
     @Builder.Default
-    private List<MenuDTO> menus = new ArrayList<>();
+    private List<MenuResponseDTO> menus = new ArrayList<>();
 
     public static StoreDTO entityToDTO(Store s) {
         return StoreDTO.builder()
@@ -46,7 +46,7 @@ public class StoreDTO {
                 .storeImageUrl(s.getStoreImageUrl())
                 .openTime(s.getOpenTime())
                 .closeTime(s.getCloseTime())
-                .menus(s.getMenus().stream().map(MenuDTO::entityToDTO).collect(Collectors.toList()))
+                .menus(s.getMenus().stream().map(MenuResponseDTO::fromEntity).collect(Collectors.toList()))
                 .build();
     }
 
