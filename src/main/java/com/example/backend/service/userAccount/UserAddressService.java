@@ -82,7 +82,9 @@ public class UserAddressService {
         // 새로운 주소를 찾아서 주요 주소로 설정합니다.
         userAccount.setAddress(addressId);
 
-        return UserAccountResponseDTO.of(userAccountRepository.save(userAccount));
+        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress()).isEmpty()
+                ? null : userAddressRepository.findById((long) userAccount.getAddress()).get();
+        return UserAccountResponseDTO.of(userAccountRepository.save(userAccount), userAddress);
     }
 
     @Transactional

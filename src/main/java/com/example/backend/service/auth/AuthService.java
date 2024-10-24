@@ -2,11 +2,13 @@ package com.example.backend.service.auth;
 
 
 import com.example.backend.entity.userAccount.UserAccount;
+import com.example.backend.entity.userAccount.UserAddress;
 import com.example.backend.jwt.TokenStore;
 import com.example.backend.dto.userAccount.UserAccountRequestDTO;
 import com.example.backend.dto.userAccount.UserAccountResponseDTO;
 import com.example.backend.jwt.TokenProvider;
 import com.example.backend.repository.UserAccount.UserAccountRepository;
+import com.example.backend.repository.UserAccount.UserAddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +26,7 @@ public class AuthService {
 
     private final AuthenticationManagerBuilder managerBuilder;
     private final UserAccountRepository userAccountRepository;
+    private final UserAddressRepository userAddressRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final TokenStore tokenStore;
@@ -39,7 +42,9 @@ public class AuthService {
         UserAccount userAccount = requestDto.toUserAccount(passwordEncoder);
         userAccount.setCreatedBy(requestDto.getUserId());
         userAccount.setModifiedBy(requestDto.getUserId());
-        return UserAccountResponseDTO.of(userAccountRepository.save(userAccount));
+        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress()).isEmpty()
+                ? null : userAddressRepository.findById((long) userAccount.getAddress()).get();
+        return UserAccountResponseDTO.of(userAccountRepository.save(userAccount), userAddress);
     }
 
     public com.example.backend.jwt.dto.TokenDTO login(UserAccountRequestDTO requestDto) {
