@@ -26,7 +26,7 @@ public class UserAccountService {
     public UserAccountResponseDTO getMyInfoBySecurity() {
         UserAccount userAccount = userAccountRepository.findById(SecurityUtil.getCurrentUserId())
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
-        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress()).orElse(null);
+        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress()).isEmpty() ? null : userAddressRepository.findById((long) userAccount.getAddress()).get();
         return UserAccountResponseDTO.of(userAccount, userAddress);
     }
 
@@ -35,7 +35,7 @@ public class UserAccountService {
         UserAccount userAccount = userAccountRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
         userAccount.setNickname(nickname);
-        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress()).orElse(null);
+        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress()).isEmpty() ? null : userAddressRepository.findById((long) userAccount.getAddress()).get();
 
         return UserAccountResponseDTO.of(userAccountRepository.save(userAccount), userAddress);
     }
@@ -51,7 +51,7 @@ public class UserAccountService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
 
         authUser.setPassword(passwordEncoder.encode(newPassword));
-        UserAddress userAddress = userAddressRepository.findById((long) authUser.getAddress()).orElse(null);
+        UserAddress userAddress = userAddressRepository.findById((long) authUser.getAddress()).isEmpty() ? null : userAddressRepository.findById((long) authUser.getAddress()).get();
 
         return UserAccountResponseDTO.of(userAccountRepository.save(authUser), userAddress);
     }

@@ -43,7 +43,7 @@ public class AuthService {
         userAccount.setCreatedBy(requestDto.getUserId());
         userAccount.setModifiedBy(requestDto.getUserId());
         userAccountRepository.save(userAccount);
-        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress()).orElse(null);
+        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress()).isEmpty() ? null : userAddressRepository.findById((long) userAccount.getAddress()).get();
         return UserAccountResponseDTO.of(userAccountRepository.save(userAccount), userAddress);
     }
 
