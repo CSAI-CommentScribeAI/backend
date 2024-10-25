@@ -43,7 +43,13 @@ public class AuthService {
         userAccount.setCreatedBy(requestDto.getUserId());
         userAccount.setModifiedBy(requestDto.getUserId());
         userAccountRepository.save(userAccount);
-        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress()).isEmpty() ? null : userAddressRepository.findById((long) userAccount.getAddress()).get();
+        UserAddress userAddress;
+
+        if(userAccount.getAddress() == 0){
+            userAddress = null;
+        }else {
+            userAddress = userAddressRepository.findById((long) userAccount.getAddress()).orElseThrow( () -> new RuntimeException("주소를 찾을 수 없습니다."));
+        }
         return UserAccountResponseDTO.of(userAccountRepository.save(userAccount), userAddress);
     }
 
