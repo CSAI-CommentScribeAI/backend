@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class UserAddressService {
 
     private final UserAddressRepository userAddressRepository;
-
     private final UserAccountRepository userAccountRepository;
 
     public UserAddressService(UserAddressRepository userAddressRepository, UserAccountRepository userAccountRepository) {
@@ -81,8 +80,8 @@ public class UserAddressService {
 
         // 새로운 주소를 찾아서 주요 주소로 설정합니다.
         userAccount.setAddress(addressId);
-
-        return UserAccountResponseDTO.of(userAccountRepository.save(userAccount));
+        UserAddress userAddress = userAddressRepository.findById((long) userAccount.getAddress()).orElse(null);
+        return UserAccountResponseDTO.of(userAccountRepository.save(userAccount), userAddress);
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package com.example.backend.entity.userAccount;
 
+import com.example.backend.dto.userAccount.UserAddressDTO;
 import javax.persistence.*;
 
 import lombok.*;
@@ -36,4 +37,6 @@ public class UserAddress {
     private Double latitude; // 위도
 
     private Double longitude; // 경도
+
+
 }

@@ -1,5 +1,6 @@
 package com.example.backend.dto.userAccount;
 
+import com.example.backend.entity.userAccount.UserAddress;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,4 +37,17 @@ public class UserAddressDTO {
 
     @NotNull(message = "Longitude is mandatory")
     private Double longitude; // 경도
+
+    public static UserAddressDTO toDTO (UserAddress userAddress) {
+        UserAddressDTO userAddressDTO = new UserAddressDTO();
+        userAddressDTO.setFullAddress(userAddress.getFullAddress());
+        userAddressDTO.setRoadAddress(userAddress.getRoadAddress());
+        userAddressDTO.setJibunAddress(userAddress.getJibunAddress());
+        userAddressDTO.setPostalCode(userAddress.getPostalCode());
+        userAddressDTO.setDetailAddress(userAddress.getDetailAddress());
+        userAddressDTO.setLatitude(userAddress.getLatitude());
+        userAddressDTO.setLongitude(userAddress.getLongitude());
+
+        return userAddressDTO;
+    }
 }
