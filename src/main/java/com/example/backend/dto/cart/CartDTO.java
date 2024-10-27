@@ -13,4 +13,6 @@ public class CartDTO {
     private List<CartItemDTO> cartItems;
     private String userAddress;
     private String storeName;
+    private Long storeId;
+
 }

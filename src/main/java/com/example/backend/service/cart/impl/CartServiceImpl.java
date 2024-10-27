@@ -48,6 +48,7 @@ public class CartServiceImpl extends CartService {
             itemDTO.setMenuName(item.getMenu().getName());
             itemDTO.setPrice(item.getMenu().getPrice());
             itemDTO.setImageUrl(item.getImageUrl());
+
             cartItems.add(itemDTO);
         });
 
@@ -62,6 +63,7 @@ public class CartServiceImpl extends CartService {
         UserAddress userAddress = userAddresses.get(0);
         cartDTO.setStoreName(cart.getStoreName());
         cartDTO.setUserAddress(userAddress.getFullAddress());
+        cartDTO.setStoreId(cart.getStoreId());
 
         return cartDTO;
     }
