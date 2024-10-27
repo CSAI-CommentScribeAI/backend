@@ -22,7 +22,7 @@ public class UserAccountResponseDTO {
                 .email(userAccount.getEmail())
                 .nickname(userAccount.getNickname())
                 .userRole(userAccount.getUserRole().toString())
-                .address(UserAddressDTO.toDTO(userAddress))
+                .address(userAddress != null ? UserAddressDTO.toDTO(userAddress) : null)
                 .build();
     }
 }
