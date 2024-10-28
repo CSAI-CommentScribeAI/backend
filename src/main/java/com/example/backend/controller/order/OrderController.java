@@ -6,8 +6,7 @@ import com.example.backend.dto.openAI.ChatGPTResponseDTO;
 import com.example.backend.dto.openAI.LetterSaveDTO;
 import com.example.backend.dto.order.OrderDTO;
 import com.example.backend.entity.comment.Review;
-import com.example.backend.entity.openAI.LetterSave;
-import com.example.backend.entity.order.Order;
+import com.example.backend.entity.order.UserOrder;
 import com.example.backend.entity.order.OrderMenu;
 import com.example.backend.entity.order.OrderStatus;
 import com.example.backend.entity.store.Store;
@@ -91,16 +90,16 @@ public class OrderController {
             orderService.placeOrder(orderId, approve);
 
             if (approve) {
-                Order order = orderService.getOrderById(orderId);
+                UserOrder userOrder = orderService.getOrderById(orderId);
 
-                List<Review> reviews = orderService.getRecentReviewsForUserAndStore(order.getUserAccount().getId(),
-                        order.getStoreId());
+                List<Review> reviews = orderService.getRecentReviewsForUserAndStore(userOrder.getUserAccount().getId(),
+                        userOrder.getStoreId());
 
-                Store store = storeRepository.findById(order.getStoreId())
+                Store store = storeRepository.findById(userOrder.getStoreId())
                         .orElseThrow(() -> new IllegalStateException("상점 정보를 찾을 수 없습니다."));
 
-                int orderCount = orderService.getOrderCountForUserAndStore(order.getUserAccount().getId(),
-                        order.getStoreId());
+                int orderCount = orderService.getOrderCountForUserAndStore(userOrder.getUserAccount().getId(),
+                        userOrder.getStoreId());
                 orderCount--;
 
                 String reviewSection = reviews.isEmpty() ?
@@ -126,7 +125,7 @@ public class OrderController {
                                 + "- 식당 이름: " + store.getName() + "\n"
                                 + "\n"
                                 + "회원 정보:\n"
-                                + "- 회원 이름: " + order.getUserAccount().getNickname() + "\n"
+                                + "- 회원 이름: " + userOrder.getUserAccount().getNickname() + "\n"
                                 + "- 주문 횟수: " + orderCount + "번\n"
                                 + "- 최근 리뷰(최대 10개):\n"
                                 + reviewSection + "\n\n"
@@ -155,14 +154,14 @@ public class OrderController {
                 ChatGPTResponseDTO chatGPTResponse = template.postForObject(apiURL, request, ChatGPTResponseDTO.class);
 
                 String letter = chatGPTResponse.getChoices().get(0).getMessage().getContent();
-                letterSaveService.saveLetter(store, order, letter);
+                letterSaveService.saveLetter(store, userOrder, letter);
 
                 ResponseDTO<String> response = new ResponseDTO<>();
                 response.setStatus(200);
                 response.setData(letter);
 
-                order.setOrderStatus(OrderStatus.DELIVERED);
-                orderRepository.save(order);
+                userOrder.setOrderStatus(OrderStatus.DELIVERED);
+                orderRepository.save(userOrder);
 
                 return ResponseEntity.ok(response);
             }

@@ -1,6 +1,6 @@
 package com.example.backend.entity.comment;
 
-import com.example.backend.entity.order.Order;
+import com.example.backend.entity.order.UserOrder;
 import com.example.backend.entity.store.Store;
 import com.example.backend.entity.userAccount.UserAccount;
 import java.time.LocalDateTime;
@@ -10,8 +10,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -41,7 +39,7 @@ public class Review {
     @OneToOne
     @MapsId // Review의 id는 Order의 id와 동일합니다.
     @JoinColumn(name = "order_id")
-    private Order order;
+    private UserOrder userOrder;
 
     private float rating;  // 별점
 

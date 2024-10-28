@@ -6,7 +6,7 @@ import com.example.backend.dto.comment.ReviewRequestDTO;
 import com.example.backend.dto.userAccount.UserAccountRequestDTO;
 import com.example.backend.entity.comment.Reply;
 import com.example.backend.entity.comment.Review;
-import com.example.backend.entity.order.Order;
+import com.example.backend.entity.order.UserOrder;
 import com.example.backend.entity.store.Store;
 import com.example.backend.entity.userAccount.UserAccount;
 import com.example.backend.entity.userAccount.UserRole;
@@ -43,22 +43,22 @@ public class ReviewService {
             throw new IllegalStateException("User does not have permission to register a review.");
         }
 
-        Order order = orderRepository.findById((long) orderId)
+        UserOrder userOrder = orderRepository.findById((long) orderId)
                 .orElseThrow(() -> new IllegalStateException("Order not found with ID: " + orderId));
 
-        LocalDateTime createdTime = order.getCreatedTime();
+        LocalDateTime createdTime = userOrder.getCreatedTime();
         LocalDateTime now = LocalDateTime.now();
         long daysBetween = ChronoUnit.DAYS.between(createdTime, now);
         if (daysBetween > 3) {
             throw new IllegalStateException("Cannot register a review for an order older than 3 days.");
         }
 
-        if (!Long.valueOf(userId).equals(order.getUserAccount().getId())) {
+        if (!Long.valueOf(userId).equals(userOrder.getUserAccount().getId())) {
             throw new IllegalStateException("User does not have permission to register a review.");
         }
 
-        Store store = storeRepository.findById(order.getStoreId())
-                .orElseThrow(() -> new IllegalStateException("Store not found with ID: " + order.getStoreId()));
+        Store store = storeRepository.findById(userOrder.getStoreId())
+                .orElseThrow(() -> new IllegalStateException("Store not found with ID: " + userOrder.getStoreId()));
 
         Review review = Review.builder()
                 .rating(reviewDTO.getRating())
@@ -66,7 +66,7 @@ public class ReviewService {
                 .createAt(LocalDateTime.now())
                 .userAccount(userAccount)
                 .store(store)
-                .order(order)
+                .userOrder(userOrder)
                 .build();
 
         reviewRepository.save(review);
@@ -140,12 +140,12 @@ public class ReviewService {
     }
 
     private ReviewDTO toReviewDTO(Review review) {
-        Order order = review.getOrder();
-        List<String> menuList = order.getOrderMenus().stream()
+        UserOrder userOrder = review.getUserOrder();
+        List<String> menuList = userOrder.getOrderMenus().stream()
                 .map(orderMenu -> orderMenu.getMenu().getName())
                 .toList();
         return ReviewDTO.builder()
-                .orderId(review.getOrder().getId())
+                .orderId(review.getUserOrder().getId())
                 .rating(review.getRating())
                 .comment(review.getComment())
                 .userId(review.getUserAccount().getId())

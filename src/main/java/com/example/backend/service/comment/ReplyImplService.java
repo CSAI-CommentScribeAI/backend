@@ -7,7 +7,7 @@ import com.example.backend.dto.openAI.ChatGPTResponseDTO;
 import com.example.backend.entity.comment.Reply;
 import com.example.backend.entity.comment.Review;
 import com.example.backend.entity.openAI.ReplySave;
-import com.example.backend.entity.order.Order;
+import com.example.backend.entity.order.UserOrder;
 import com.example.backend.entity.order.OrderMenu;
 import com.example.backend.entity.store.Store;
 import com.example.backend.entity.userAccount.UserAccount;
@@ -175,12 +175,12 @@ public class ReplyImplService implements ReplyService{
         UserAccount userAccount = userAccountRepository.findById(review.getUserAccount().getId())
                 .orElseThrow(() -> new IllegalStateException("User not found with ID: " + review.getUserAccount().getId()));
 
-        Order order = review.getOrder();
+        UserOrder userOrder = review.getUserOrder();
 
-        Store store = storeRepository.findById(order.getStoreId())
+        Store store = storeRepository.findById(userOrder.getStoreId())
                 .orElseThrow(() -> new IllegalStateException("상점 정보를 찾을 수 없습니다."));
 
-        List<Review> reviews = orderService.getRecentReviewsForUserAndStore(order.getUserAccount().getId(), order.getStoreId());
+        List<Review> reviews = orderService.getRecentReviewsForUserAndStore(userOrder.getUserAccount().getId(), userOrder.getStoreId());
 
         // 현재 리뷰 내용과 같은 리뷰는 제외
         List<Review> filteredReviews = reviews.stream()
@@ -193,9 +193,9 @@ public class ReplyImplService implements ReplyService{
                         .mapToObj(i -> (i + 1) + ". " + filteredReviews.get(i).getComment())
                         .collect(Collectors.joining("\n"));
 
-        List<OrderMenu> orderDetails = orderMenuRepository.findByOrderId(order.getId());
+        List<OrderMenu> orderDetails = orderMenuRepository.findByOrderId(userOrder.getId());
         if (orderDetails == null || orderDetails.isEmpty()) {
-            throw new IllegalStateException("Order menus not found for order ID " + order.getId());
+            throw new IllegalStateException("Order menus not found for order ID " + userOrder.getId());
         }
 
         String orderDetailsString = orderDetails.stream()

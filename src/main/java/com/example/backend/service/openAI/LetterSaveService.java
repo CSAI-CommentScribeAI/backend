@@ -2,7 +2,7 @@ package com.example.backend.service.openAI;
 
 import com.example.backend.dto.openAI.LetterSaveDTO;
 import com.example.backend.entity.openAI.LetterSave;
-import com.example.backend.entity.order.Order;
+import com.example.backend.entity.order.UserOrder;
 import com.example.backend.entity.store.Store;
 import com.example.backend.repository.openAI.LetterSaveRepository;
 import java.time.LocalDateTime;
@@ -15,10 +15,10 @@ public class LetterSaveService {
 
     private final LetterSaveRepository letterSaveRepository;
 
-    public void saveLetter(Store store, Order order, String letter) {
+    public void saveLetter(Store store, UserOrder userOrder, String letter) {
         LetterSave letterSave = new LetterSave();
         letterSave.setStore(store);
-        letterSave.setOrder(order);
+        letterSave.setUserOrder(userOrder);
         letterSave.setMessageContent(letter);
         letterSave.setCreatedAt(LocalDateTime.now());
         letterSave.setSentimentScore(0);

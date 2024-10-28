@@ -2,9 +2,7 @@ package com.example.backend.entity.store;
 
 import com.example.backend.entity.TimeZone;
 import com.example.backend.entity.menu.Menu;
-import com.example.backend.entity.order.Order;
 import com.example.backend.entity.userAccount.UserAccount;
-import com.example.backend.exception.store.StoreDistanceException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 

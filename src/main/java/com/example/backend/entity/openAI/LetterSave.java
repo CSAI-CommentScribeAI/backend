@@ -1,17 +1,13 @@
 package com.example.backend.entity.openAI;
 
-import com.example.backend.entity.order.Order;
+import com.example.backend.entity.order.UserOrder;
 import com.example.backend.entity.store.Store;
-import com.example.backend.entity.userAccount.UserAccount;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
@@ -38,7 +34,7 @@ public class LetterSave {
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "order_id")
-    private Order order;
+    private UserOrder userOrder;
 
     @ManyToOne
     @JoinColumn(name = "store_id")

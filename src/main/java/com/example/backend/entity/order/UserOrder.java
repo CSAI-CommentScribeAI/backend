@@ -1,14 +1,10 @@
 package com.example.backend.entity.order;
 
 import com.example.backend.entity.TimeZone;
-import com.example.backend.entity.comment.Review;
-import com.example.backend.entity.store.Store;
 import com.example.backend.entity.userAccount.UserAccount;
-import com.example.backend.entity.userAccount.UserAddress;
 import lombok.*;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -17,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Order")
-public class Order extends TimeZone {
+@Table(name = "User_Order")
+public class UserOrder extends TimeZone {
     @Id
     @GeneratedValue
     private Long id;
@@ -38,7 +34,7 @@ public class Order extends TimeZone {
 
     private String userAddress;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "userOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<OrderMenu> orderMenus;
 
 }

@@ -1,11 +1,9 @@
 package com.example.backend.entity.order;
 
 import com.example.backend.entity.menu.Menu;
-import com.example.backend.entity.userAccount.UserAccount;
 import lombok.*;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -20,7 +18,7 @@ public class OrderMenu {
     private Long id;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id", nullable = false) // Assuming an order must exist
-    private Order order;
+    private UserOrder userOrder;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id", nullable = false) // Assuming a menu must exist
     private Menu menu;
