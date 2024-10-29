@@ -135,7 +135,7 @@ public class ReviewService {
     }
 
     public ReviewDTO getReviewByOrderId(int orderId) {
-        Review review = reviewRepository.findByOrderId((long) orderId);
+        Review review = reviewRepository.findById((long) orderId).orElseThrow( () -> new IllegalStateException("Review not found with ID: " + orderId));
         return toReviewDTO(review);
     }
 
