@@ -193,7 +193,7 @@ public class ReplyImplService implements ReplyService{
                         .mapToObj(i -> (i + 1) + ". " + filteredReviews.get(i).getComment())
                         .collect(Collectors.joining("\n"));
 
-        List<OrderMenu> orderDetails = orderMenuRepository.findByOrderId(userOrder.getId());
+        List<OrderMenu> orderDetails = orderMenuRepository.findByUserOrder_Id(userOrder.getId());
         if (orderDetails == null || orderDetails.isEmpty()) {
             throw new IllegalStateException("Order menus not found for order ID " + userOrder.getId());
         }

@@ -28,10 +28,7 @@ public class LetterSaveService {
     }
 
     public LetterSaveDTO getLetter(Long orderId) {
-        LetterSave letterSave = letterSaveRepository.findByOrderId(orderId);
-        if (letterSave == null) {
-            return null;
-        }
+        LetterSave letterSave = letterSaveRepository.findById(orderId).isPresent() ? letterSaveRepository.findById(orderId).get() : null;
 
         LetterSaveDTO dto = new LetterSaveDTO();
         dto.setOrderId(letterSave.getId());

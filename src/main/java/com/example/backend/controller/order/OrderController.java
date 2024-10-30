@@ -109,7 +109,7 @@ public class OrderController {
                                 .collect(Collectors.joining("\n"));
 
                 // 주문 내역을 구성
-                List<OrderMenu> orderDetails = orderMenuRepository.findByOrderId(orderId);
+                List<OrderMenu> orderDetails = orderMenuRepository.findByUserOrder_Id(orderId);
                 if (orderDetails == null || orderDetails.isEmpty()) {
                     throw new IllegalStateException("Order menus not found for order ID " + orderId);
                 }
