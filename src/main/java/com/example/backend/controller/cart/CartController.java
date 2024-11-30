@@ -2,7 +2,7 @@ package com.example.backend.controller.cart;
 
 import com.example.backend.dto.ResponseDTO;
 import com.example.backend.dto.cart.CartDTO;
-import com.example.backend.dto.menu.MenuDTO;
+import com.example.backend.dto.menu.MenuResponseDTO;
 import com.example.backend.service.cart.impl.CartServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,7 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ResponseDTO<CartDTO>> addToCart(Authentication authentication, @RequestBody MenuDTO menuDTO) {
+    public ResponseEntity<ResponseDTO<CartDTO>> addToCart(Authentication authentication, @RequestBody MenuResponseDTO menuDTO) {
         CartDTO cartDTO = cartService.addToCart(authentication, menuDTO);
         return ResponseEntity.ok(new ResponseDTO<>(HttpStatus.OK.value(), cartDTO));
     }

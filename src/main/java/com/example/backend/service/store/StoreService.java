@@ -1,9 +1,6 @@
 package com.example.backend.service.store;
 
-import com.example.backend.dto.menu.MenuListDTO;
 import com.example.backend.dto.store.*;
-import com.example.backend.entity.menu.Menu;
-import com.example.backend.entity.menu.MenuStatus;
 import com.example.backend.entity.store.Store;
 import com.example.backend.entity.store.StoreAddress;
 import com.example.backend.entity.userAccount.UserAccount;
@@ -149,8 +146,8 @@ public class StoreService {
         store.setMinOrderPrice(storeDTO.getMinOrderPrice());
         store.setCategory(storeDTO.getCategory());
         store.setInfo(storeDTO.getInfo());
-        store.setOpenTime(storeDTO.getOpenTime()); // 오픈 시간 업데이트
-        store.setCloseTime(storeDTO.getCloseTime()); // 마감 시간 업데이트
+        store.setOpenTime(storeDTO.getOpenTime());
+        store.setCloseTime(storeDTO.getCloseTime());
 
         storeRepository.save(store);
 

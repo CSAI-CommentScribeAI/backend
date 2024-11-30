@@ -2,7 +2,8 @@ package com.example.backend.service.cart.impl;
 
 import com.example.backend.dto.cart.CartDTO;
 import com.example.backend.dto.cart.CartItemDTO;
-import com.example.backend.dto.menu.MenuDTO;
+import com.example.backend.dto.menu.MenuRequestDTO;
+import com.example.backend.dto.menu.MenuResponseDTO;
 import com.example.backend.entity.cart.Cart;
 import com.example.backend.entity.cart.CartItem;
 import com.example.backend.entity.menu.Menu;
@@ -70,7 +71,7 @@ public class CartServiceImpl extends CartService {
 
     @Override
     @Transactional
-    public CartDTO addToCart(Authentication authentication, MenuDTO menuDTO) {
+    public CartDTO addToCart(Authentication authentication, MenuResponseDTO menuDTO) {
         Long userId = Long.parseLong(authentication.getName());
         UserAccount user = userAccountRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다: " + userId));
@@ -106,7 +107,7 @@ public class CartServiceImpl extends CartService {
                 .orElse(null);
     }
 
-    private void addNewItem(Cart cart, MenuDTO menuDTO) {
+    private void addNewItem(Cart cart, MenuResponseDTO menuDTO) {
         if (cart.getStoreId() == null) {
             cart.setStoreId(menuDTO.getStoreId());
         }
@@ -124,6 +125,7 @@ public class CartServiceImpl extends CartService {
         newCartItem.setCart(cart); // CartItem에 cart 설정
         cart.getCartItems().add(newCartItem);
     }
+
 
     @Override
     @Transactional
